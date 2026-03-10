@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Dr.Home Clean — Técnico</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #F5F5F5;
+      color: #0D0D0D
+    }
+
+    /* LOGIN */
+    #pg-login {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(160deg, #1B5E20, #2E7D32, #B8860B);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      z-index: 999
+    }
+
+    .login-card {
+      background: #fff;
+      border-radius: 24px;
+      padding: 36px 28px;
+      width: 100%;
+      max-width: 360px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4)
+    }
+
+    .login-logo {
+      text-align: center;
+      margin-bottom: 28px
+    }
+
+    .login-logo-title {
+      font-size: 32px;
+      font-weight: 900;
+      color: #2E7D32;
+      letter-spacing: -1px
+    }
+
+    .login-logo-title span {
+      color: #B8860B
+    }
+
+    .login-logo-sub {
+      font-size: 11px;
+      color: #6B7280;
+      letter-spacing: 2px;
+      margin-top: 4px
+    }
+
+    .login-logo-badge {
+      display: inline-block;
+      margin-top: 8px;
+      background: #E8F5E9;
+      color: #2E7D32;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 20px
+    }
+
+    .fgrp {
+      margin-bottom: 14px
+    }
+
+    .fgrp label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #444;
+      display: block;
+      margin-bottom: 6px
+    }
+
+    .fgrp input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid #E5E7EB;
+      border-radius: 12px;
+      font-size: 16px;
+      font-family: inherit;
+      outline: none;
+      transition: border .2s
+    }
+
+    .fgrp input:focus {
+      border-color: #2E7D32
+    }
+
+    .btn-login {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #2E7D32, #1B5E20);
+      color: #fff;
+      border: none;
+      border-radius: 14px;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      margin-top: 4px
+    }
+
+    .erro {
+      color: #C62828;
+      font-size: 13px;
+      text-align: center;
+      margin-bottom: 12px;
+      display: none
+    }
+
+    /* APP */
+    #app {
+      display: none
+    }
+
+    .topbar {
+      background: linear-gradient(135deg, #1B5E20, #2E7D32);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10
+    }
+
+    .topbar-logo {
+      font-size: 17px;
+      font-weight: 800;
+      color: #fff
+    }
+
+    .topbar-logo span {
+      color: #FFD700
+    }
+
+    .topbar-sub {
+      font-size: 12px;
+      color: #A5D6A7;
+      margin-top: 2px
+    }
+
+    .btn-sair {
+      background: rgba(255, 255, 255, 0.15);
+      border: none;
+      color: #fff;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer
+    }
+
+    .content {
+      padding: 16px;
+      max-width: 600px;
+      margin: 0 auto;
+      padding-bottom: 100px
+    }
+
+    .section-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1B5E20;
+      margin-bottom: 12px
+    }
+
+    /* TABS */
+    .tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 16px;
+      background: #fff;
+      border-radius: 12px;
+      padding: 4px
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      background: none;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      color: #757575;
+      transition: all .15s
+    }
+
+    .tab-btn.active {
+      background: #2E7D32;
+      color: #fff
+    }
+
+    /* OS CARD */
+    .os-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08)
+    }
+
+    .os-card.atrasada {
+      border-left: 4px solid #C62828
+    }
+
+    .os-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 8px
+    }
+
+    .os-titulo {
+      font-weight: 700;
+      font-size: 15px;
+      color: #0D0D0D
+    }
+
+    .badge {
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600
+    }
+
+    .badge-pendente {
+      background: #FFF8E1;
+      color: #B8860B
+    }
+
+    .badge-agendado {
+      background: #E3F2FD;
+      color: #1565C0
+    }
+
+    .badge-deslocamento {
+      background: #FFF3E0;
+      color: #E65100
+    }
+
+    .badge-execucao {
+      background: #E8F5E9;
+      color: #2E7D32
+    }
+
+    .badge-concluida {
+      background: #F5F5F5;
+      color: #757575
+    }
+
+    .os-info {
+      font-size: 13px;
+      color: #555;
+      margin-bottom: 3px
+    }
+
+    .os-obs {
+      font-size: 12px;
+      color: #9E9E9E;
+      margin-top: 6px;
+      font-style: italic
+    }
+
+    .os-btns {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      flex-wrap: wrap
+    }
+
+    .btn-status {
+      flex: 1;
+      min-width: 120px;
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit
+    }
+
+    .btn-desl {
+      background: #FFF3E0;
+      color: #E65100
+    }
+
+    .btn-exec {
+      background: #E8F5E9;
+      color: #2E7D32
+    }
+
+    .btn-conc {
+      background: #2E7D32;
+      color: #fff
+    }
+
+    .btn-extra {
+      padding: 10px 14px;
+      background: #F3F4F6;
+      color: #374151;
+      border: none;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit
+    }
+
+    .btn-wpp {
+      padding: 10px 14px;
+      background: #25D366;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      gap: 5px
+    }
+
+    .btn-finalizar {
+      padding: 10px 14px;
+      background: linear-gradient(135deg, #1565C0, #0D47A1);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      gap: 5px
+    }
+
+    /* AGENDA CARD */
+    .ag-card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin-bottom: 10px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+      display: flex;
+      align-items: center;
+      gap: 12px
+    }
+
+    .ag-date {
+      text-align: center;
+      min-width: 44px
+    }
+
+    .ag-day {
+      font-size: 22px;
+      font-weight: 800;
+      color: #2E7D32
+    }
+
+    .ag-wday {
+      font-size: 9px;
+      color: #757575;
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: .5px
+    }
+
+    .ag-div {
+      width: 1px;
+      background: #E0E0E0;
+      align-self: stretch
+    }
+
+    .ag-info {
+      flex: 1;
+      min-width: 0
+    }
+
+    .ag-hora {
+      font-size: 12px;
+      font-weight: 700;
+      color: #2E7D32
+    }
+
+    .ag-nome {
+      font-size: 14px;
+      font-weight: 700;
+      margin-top: 1px
+    }
+
+    .ag-svc {
+      font-size: 12px;
+      color: #757575;
+      margin-top: 1px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap
+    }
+
+    .ag-status {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 12px;
+      flex-shrink: 0
+    }
+
+    .empty {
+      text-align: center;
+      padding: 48px 20px;
+      background: #fff;
+      border-radius: 16px;
+      color: #9E9E9E
+    }
+
+    .empty-ic {
+      font-size: 40px;
+      margin-bottom: 8px
+    }
+
+    /* MODAL */
+    .modal-bg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+      align-items: flex-end;
+      justify-content: center
+    }
+
+    .modal-bg.open {
+      display: flex
+    }
+
+    .modal-box {
+      background: #fff;
+      border-radius: 20px 20px 0 0;
+      padding: 24px;
+      width: 100%;
+      max-width: 500px;
+      max-height: 85vh;
+      overflow-y: auto
+    }
+
+    .modal-title {
+      font-weight: 700;
+      font-size: 16px;
+      margin-bottom: 16px
+    }
+
+    .modal-input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #E5E7EB;
+      border-radius: 10px;
+      font-size: 15px;
+      font-family: inherit;
+      margin-bottom: 10px;
+      outline: none;
+      box-sizing: border-box
+    }
+
+    .modal-input:focus {
+      border-color: #2E7D32
+    }
+
+    .modal-btns {
+      display: flex;
+      gap: 10px;
+      margin-top: 6px
+    }
+
+    .btn-cancel {
+      flex: 1;
+      padding: 12px;
+      background: #F5F5F5;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit
+    }
+
+    .btn-save {
+      flex: 1;
+      padding: 12px;
+      background: #2E7D32;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit
+    }
+
+    /* FINALIZAR MODAL */
+    .fin-section {
+      background: #F9FAFB;
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 14px;
+      border: 1px solid #E5E7EB
+    }
+
+    .fin-section-title {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px
+    }
+
+    .fin-pix-key {
+      background: #fff;
+      border: 2px dashed #2E7D32;
+      border-radius: 10px;
+      padding: 14px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 600;
+      color: #1B5E20;
+      word-break: break-all;
+      margin-bottom: 8px
+    }
+
+    .fin-valor {
+      font-size: 28px;
+      font-weight: 900;
+      color: #2E7D32;
+      text-align: center;
+      margin-bottom: 8px
+    }
+
+    .btn-copiar {
+      width: 100%;
+      padding: 10px;
+      background: #E8F5E9;
+      color: #2E7D32;
+      border: 1.5px solid #A5D6A7;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit
+    }
+
+    .btn-google {
+      width: 100%;
+      padding: 12px;
+      background: #FFFBEB;
+      color: #B45309;
+      border: 1.5px solid #FDE68A;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      text-decoration: none
+    }
+
+    .btn-enviar-wpp {
+      width: 100%;
+      padding: 12px;
+      background: #25D366;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      text-decoration: none
+    }
+
+    .sync-bar {
+      text-align: center;
+      font-size: 12px;
+      color: #9E9E9E;
+      padding: 8px;
+      background: #fff;
+      border-bottom: 1px solid #E0E0E0
+    }
+
+    /* BOTTOM NAV */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #fff;
+      border-top: 1px solid #E0E0E0;
+      display: flex;
+      z-index: 100;
+      padding: 6px 0 env(safe-area-inset-bottom, 6px)
+    }
+
+    .bnav-btn {
+      flex: 1;
+      border: none;
+      background: none;
+      padding: 8px 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      font-size: 10px;
+      font-weight: 600;
+      color: #9E9E9E;
+      cursor: pointer;
+      font-family: inherit
+    }
+
+    .bnav-btn.active {
+      color: #2E7D32
+    }
+
+    .bnav-ic {
+      font-size: 20px;
+      line-height: 1
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- LOGIN -->
+  <div id="pg-login">
+    <div class="login-card">
+      <div class="login-logo">
+        <div class="login-logo-title">Dr.<span>HOME</span> CLEAN</div>
+        <div class="login-logo-sub">ALTO PADRÃO EM HIGIENIZAÇÃO</div>
+        <div class="login-logo-badge">👷 Área do Técnico</div>
+      </div>
+      <div class="fgrp">
+        <label>Senha</label>
+        <input id="inp-senha" type="password" placeholder="••••••••" autocomplete="current-password"
+          onkeydown="if(event.key==='Enter')entrar()">
+      </div>
+      <div id="login-erro" class="erro">Senha incorreta. Tente novamente.</div>
+      <button class="btn-login" onclick="entrar()">Entrar →</button>
+    </div>
+  </div>
+
+  <!-- APP -->
+  <div id="app">
+    <div class="topbar">
+      <div>
+        <div class="topbar-logo">Dr.<span>HOME</span> CLEAN</div>
+        <div id="tec-nome-top" class="topbar-sub"></div>
+      </div>
+      <button class="btn-sair" onclick="sair()">Sair</button>
+    </div>
+    <div id="sync-bar" class="sync-bar">Carregando...</div>
+
+    <!-- TABS -->
+    <div style="padding:12px 16px 0">
+      <div class="tabs">
+        <button class="tab-btn active" id="tab-os" onclick="setTab('os')">📋 Minhas OS</button>
+        <button class="tab-btn" id="tab-agenda" onclick="setTab('agenda')">📅 Agenda</button>
+      </div>
+    </div>
+
+    <div class="content">
+      <!-- ABA: MINHAS OS -->
+      <div id="view-os">
+        <div class="section-title">📋 Minhas OS</div>
+        <div id="os-list">
+          <div class="empty">
+            <div class="empty-ic">⏳</div>Carregando...
+          </div>
+        </div>
+      </div>
+
+      <!-- ABA: AGENDA -->
+      <div id="view-agenda" style="display:none">
+        <div class="section-title">📅 Minha Agenda</div>
+        <div id="agenda-list">
+          <div class="empty">
+            <div class="empty-ic">📅</div>Nenhum agendamento
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTTOM NAV -->
+    <div class="bottom-nav">
+      <button class="bnav-btn active" id="bnav-os" onclick="setTab('os')">
+        <span class="bnav-ic">📋</span>OS
+      </button>
+      <button class="bnav-btn" id="bnav-agenda" onclick="setTab('agenda')">
+        <span class="bnav-ic">📅</span>Agenda
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL EXTRA -->
+  <div id="m-extra" class="modal-bg">
+    <div class="modal-box">
+      <div class="modal-title">➕ Adicionar Serviço Extra</div>
+      <input id="extra-desc" class="modal-input" placeholder="Descrição do serviço extra">
+      <input id="extra-val" class="modal-input" type="text" inputmode="decimal"
+        placeholder="Valor adicional (R$) — deixe 0 se não souber">
+      <div class="modal-btns">
+        <button class="btn-cancel" onclick="fecharExtra()">Cancelar</button>
+        <button class="btn-save" onclick="salvarExtra()">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL FECHAR OS COM CHECKLIST E INSUMOS -->
+  <div id="m-tec-concluir" class="modal-bg">
+    <div class="modal-box">
+      <div class="modal-title" style="color:#1B5E20">✅ Concluir Serviço</div>
+
+      <!-- INSUMOS GASTOS -->
+      <div style="margin-bottom:20px">
+        <div style="font-weight:700;font-size:14px;color:#333;margin-bottom:8px">🧪 Quantidade Gasta (Insumos)</div>
+        <div style="font-size:12px;color:#666;margin-bottom:10px">Informe quanto foi utilizado de cada produto.</div>
+        <div id="tec-concluir-insumos" style="max-height:200px;overflow-y:auto;padding-right:4px"></div>
+      </div>
+
+      <!-- CHECKLIST DE INSPEÇÃO (FABRIC STATE) -->
+      <div style="margin-bottom:20px;background:#FFF9C4;padding:14px;border-radius:12px;border:1px solid #FFE082">
+        <div style="font-weight:700;font-size:14px;color:#F57F17;margin-bottom:8px">📋 Checklist de Inspeção (Antes)
+        </div>
+        <div style="font-size:12px;color:#555;margin-bottom:12px">Marque o estado atual do tecido:</div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+          <label
+            style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;background:#fff;padding:8px;border-radius:8px">
+            <input type="checkbox" id="tec-manchas"> Manchas
+          </label>
+          <label
+            style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;background:#fff;padding:8px;border-radius:8px">
+            <input type="checkbox" id="tec-rasgos"> Rasgos/Furos
+          </label>
+          <label
+            style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;background:#fff;padding:8px;border-radius:8px">
+            <input type="checkbox" id="tec-odores"> Odores Fortes
+          </label>
+        </div>
+
+        <div id="tec-avarias-desc-div">
+          <textarea id="tec-avarias-desc"
+            placeholder="Detalhes (Ex: Mancha de vinho no braço direito, rasgo pequeno no encosto...)" rows="2"
+            style="width:100%;padding:10px;border:1px solid #FBC02D;border-radius:8px;font-size:13px;font-family:inherit;box-sizing:border-box;background:#fff"></textarea>
+        </div>
+      </div>
+
+      <!-- UPLOAD DE FOTOS ANTES / DEPOIS -->
+      <div style="margin-bottom:24px">
+        <div style="font-weight:700;font-size:14px;color:#333;margin-bottom:8px">📸 Fotos do Serviço (Obrigatório)</div>
+        <div style="display:grid;grid-template-columns:1fr;gap:10px">
+          <div style="background:#F3F4F6;padding:12px;border-radius:10px;border:1px dashed #9CA3AF">
+            <label style="font-size:13px;font-weight:600;display:block;margin-bottom:6px">Fotos do "Antes"</label>
+            <input type="file" id="tec-fotos-antes" accept="image/*" multiple style="font-size:12px;width:100%">
+          </div>
+          <div style="background:#F3F4F6;padding:12px;border-radius:10px;border:1px dashed #9CA3AF">
+            <label style="font-size:13px;font-weight:600;display:block;margin-bottom:6px">Fotos do "Depois"</label>
+            <input type="file" id="tec-fotos-depois" accept="image/*" multiple style="font-size:12px;width:100%">
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-btns">
+        <button class="btn-cancel" onclick="fecharTecConcluir()">Voltar</button>
+        <button class="btn-save" onclick="salvarTecConcluir()">✅ Concluir OS</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL FINALIZAR SERVIÇO (PIX + Avaliação Google) -->
+  <div id="m-finalizar" class="modal-bg">
+    <div class="modal-box">
+      <div class="modal-title">✅ Serviço Finalizado!</div>
+
+      <!-- Valor -->
+      <div class="fin-section">
+        <div class="fin-section-title">💰 Valor do Serviço</div>
+        <div class="fin-valor" id="fin-valor-os">R$ 0,00</div>
+      </div>
+
+      <!-- PIX -->
+      <div class="fin-section">
+        <div class="fin-section-title">🏦 Pagamento via PIX</div>
+        <div style="font-size:12px;color:#757575;margin-bottom:8px">Chave PIX da empresa:</div>
+        <div class="fin-pix-key" id="fin-pix-chave">contatodrhomeclean@gmail.com</div>
+        <button class="btn-copiar" onclick="copiarPix()">📋 Copiar Chave PIX</button>
+      </div>
+
+      <!-- Avaliação Google -->
+      <div class="fin-section">
+        <div class="fin-section-title">⭐ Avaliação no Google</div>
+        <div style="font-size:12px;color:#757575;margin-bottom:8px">Peça ao cliente para avaliar:</div>
+        <a class="btn-google" href="https://g.page/r/CWnF2jY4DQVeEBM/review" target="_blank" rel="noopener">
+          ⭐ Abrir Avaliação no Google
+        </a>
+      </div>
+
+      <!-- Enviar tudo via WhatsApp -->
+      <a class="btn-enviar-wpp" id="fin-wpp-link" href="#" target="_blank" rel="noopener">
+        📲 Enviar PIX + Avaliação via WhatsApp
+      </a>
+
+      <div style="margin-top:14px">
+        <button class="btn-cancel" style="width:100%" onclick="fecharFinalizar()">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SB_URL = 'https://xnpexqbcwhmzxyzbnxiu.supabase.co';
+    const SB_KEY = 'sb_publishable_VG2H-mmt7qbLkBPseAsfqw_KkzNb_0e';
+    const GOOGLE_REVIEW_URL = 'https://g.page/r/CWnF2jY4DQVeEBM/review';
+    const PIX_CHAVE = '66992394914';
+    const WPP_EMPRESA = '5566992394914';
+
+    let D = null; // dados completos do Supabase (mas técnico só vê o filtrado)
+    let _tecLogado = null;
+    let _extraOSId = null;
+    let _polling = null;
+    let _currentTab = 'os';
+
+    // ===== FILTRO DE SEGURANÇA =====
+    // Extrai APENAS os dados que o técnico pode ver
+    function dadosFiltrados() {
+      if (!D || !_tecLogado) return { ordens: [] };
+      // Técnico só vê suas OS (pelo nome), nada de financeiro
+      const minhasOS = (D.ordens || []).filter(o =>
+        o.tec === _tecLogado.nome && o.status !== 'excluida'
+      );
+      return { ordens: minhasOS };
+    }
+
+    // ===== SUPABASE =====
+    async function sbGet() {
+      const r = await fetch(SB_URL + '/rest/v1/dados?id=eq.principal&select=conteudo,atualizado_em', {
+        headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY }
+      });
+      const json = await r.json();
+      return json && json[0] ? json[0] : null;
+    }
+
+    async function sbSave(conteudo) {
+      const ts = new Date().toISOString();
+      await fetch(SB_URL + '/rest/v1/dados', {
+        method: 'POST',
+        headers: {
+          'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY,
+          'Content-Type': 'application/json',
+          'Prefer': 'resolution=merge-duplicates,return=minimal'
+        },
+        body: JSON.stringify({ id: 'principal', conteudo, atualizado_em: ts })
+      });
+    }
+
+    // ===== TABS =====
+    function setTab(tab) {
+      _currentTab = tab;
+      document.getElementById('view-os').style.display = tab === 'os' ? 'block' : 'none';
+      document.getElementById('view-agenda').style.display = tab === 'agenda' ? 'block' : 'none';
+      // Tabs superiores
+      document.getElementById('tab-os').classList.toggle('active', tab === 'os');
+      document.getElementById('tab-agenda').classList.toggle('active', tab === 'agenda');
+      // Bottom nav
+      document.getElementById('bnav-os').classList.toggle('active', tab === 'os');
+      document.getElementById('bnav-agenda').classList.toggle('active', tab === 'agenda');
+      if (tab === 'agenda') renderAgenda();
+    }
+
+    // ===== LOGIN =====
+    async function entrar() {
+      const senha = document.getElementById('inp-senha').value.trim();
+      if (!senha) return;
+
+      setSyncBar('Verificando...');
+      try {
+        const nuvem = await sbGet();
+        if (!nuvem || !nuvem.conteudo) { setSyncBar('Erro de conexão'); return; }
+        D = nuvem.conteudo;
+
+        const tec = (D.tecnicosObj || []).find(t => t.senha && t.senha === senha && t.ativo);
+        if (!tec) {
+          document.getElementById('login-erro').style.display = 'block';
+          document.getElementById('inp-senha').value = '';
+          setSyncBar('');
+          return;
+        }
+
+        _tecLogado = tec;
+        try { sessionStorage.setItem('dhc_tec', JSON.stringify({ id: tec.id, senha: tec.senha })); } catch (e) { }
+        abrirApp();
+      } catch (e) {
+        setSyncBar('Erro: sem conexão');
+      }
+    }
+
+    function sair() {
+      clearInterval(_polling);
+      _tecLogado = null;
+      D = null;
+      try { sessionStorage.removeItem('dhc_tec'); } catch (e) { }
+      document.getElementById('app').style.display = 'none';
+      document.getElementById('pg-login').style.display = 'flex';
+      document.getElementById('inp-senha').value = '';
+    }
+
+    function abrirApp() {
+      document.getElementById('pg-login').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      document.getElementById('tec-nome-top').textContent = '👷 ' + _tecLogado.nome;
+      renderOS();
+      renderAgenda();
+      iniciarPolling();
+    }
+
+    // ===== POLLING =====
+    let _tsSync = '';
+    function iniciarPolling() {
+      clearInterval(_polling);
+      _polling = setInterval(async function () {
+        try {
+          const nuvem = await sbGet();
+          if (!nuvem) return;
+          if (nuvem.atualizado_em === _tsSync) return;
+          _tsSync = nuvem.atualizado_em;
+          D = nuvem.conteudo;
+
+          // Kill-Switch Check
+          const tecAtivo = (D.tecnicosObj || []).find(t => t.id === _tecLogado.id && t.ativo);
+          if (!tecAtivo) {
+            alert('🚨 ACESSO REVOGADO EM TEMPO REAL.');
+            sair();
+            return;
+          }
+
+          renderOS();
+          renderAgenda();
+          setSyncBar('Atualizado ' + new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }));
+        } catch (e) { }
+      }, 15000);
+    }
+
+    function setSyncBar(txt) {
+      const el = document.getElementById('sync-bar');
+      if (el) el.textContent = txt;
+    }
+
+    // ===== HELPERS =====
+    function formatCurrency(v) {
+      return 'R$ ' + (v || 0).toFixed(2).replace('.', ',');
+    }
+
+    function getHoje() {
+      return new Date().toISOString().split('T')[0];
+    }
+
+    function formatDate(d) {
+      if (!d) return '';
+      const p = d.split('-');
+      if (p.length !== 3) return d;
+      return p[2] + '/' + p[1] + '/' + p[0];
+    }
+
+    function getTelCliente(cli) {
+      if (!D || !cli) return '';
+      const c = (D.clientes || []).find(x => x.nome === cli);
+      return c ? (c.tel || c.telefone || '') : '';
+    }
+
+    function limparTel(t) {
+      return (t || '').replace(/\D/g, '');
+    }
+
+    // ===== RENDER OS =====
+    function renderOS() {
+      if (!D || !_tecLogado) return;
+      const lista = document.getElementById('os-list');
+      const { ordens: minhas } = dadosFiltrados();
+      const ativas = minhas.filter(o => o.status !== 'cancelada');
+
+      if (!ativas.length) {
+        lista.innerHTML = '<div class="empty"><div class="empty-ic">✅</div>Nenhuma OS atribuída a você</div>';
+        return;
+      }
+
+      const hoje = getHoje();
+      const ordemStatus = { execucao: 0, deslocamento: 1, pendente: 2, agendado: 3, concluida: 4 };
+      ativas.sort((a, b) => (ordemStatus[a.status] || 9) - (ordemStatus[b.status] || 9));
+
+      lista.innerHTML = ativas.map(o => {
+        const isAtrasada = o.data && o.data < hoje && o.status !== 'concluida' && o.status !== 'cancelada';
+        const badge = {
+          agendado: '<span class="badge badge-agendado">📅 Agendado</span>',
+          pendente: '<span class="badge badge-pendente">⏳ Pendente</span>',
+          deslocamento: '<span class="badge badge-deslocamento">🚗 Deslocamento</span>',
+          execucao: '<span class="badge badge-execucao">🔧 Em Execução</span>',
+          concluida: '<span class="badge badge-concluida">✅ Concluída</span>',
+        }[o.status] || '';
+
+        // Botões de status
+        let btns = '';
+        if (o.status !== 'concluida') {
+          btns = `<div class="os-btns">
+        ${(o.status === 'pendente' || o.status === 'agendado') ? `<button class="btn-status btn-desl" onclick="mudarStatus(${o.id},'deslocamento')">🚗 Deslocamento</button>` : ''}
+        ${o.status === 'deslocamento' ? `<button class="btn-status btn-exec" onclick="mudarStatus(${o.id},'execucao')">🔧 Iniciar</button>` : ''}
+        ${o.status === 'execucao' ? `<button class="btn-status btn-conc" onclick="mudarStatus(${o.id},'concluida')">✅ Concluir</button>` : ''}
+        <button class="btn-extra" onclick="abrirExtra(${o.id})">➕ Extra</button>
+      </div>`;
+        }
+
+        // Botão WhatsApp Lembrete (só para agendados/pendentes)
+        let wppBtn = '';
+        if (o.status !== 'concluida' && o.status !== 'cancelada') {
+          const telCli = limparTel(getTelCliente(o.cli));
+          if (telCli) {
+            const msgLembrete = encodeURIComponent(
+              `Olá ${o.cli || ''}! 😊\n\nLembramos que seu atendimento *Dr. Home Clean* está agendado:\n\n` +
+              `📅 *Data:* ${formatDate(o.data) || 'A confirmar'}\n` +
+              (o.hora ? `🕐 *Horário:* ${o.hora}\n` : '') +
+              (o.end ? `📍 *Endereço:* ${o.end}\n` : '') +
+              `🛋️ *Serviço:* ${o.svc || o.item || 'Higienização'}\n\n` +
+              `Qualquer dúvida, fale conosco! 🧹✨`
+            );
+            wppBtn = `<button class="btn-wpp" onclick="window.open('https://wa.me/${telCli}?text=${msgLembrete}','_blank')">📲 Lembrete WhatsApp</button>`;
+          }
+        }
+
+        // Botão Finalizar (PIX + Avaliação) — para OS concluída ou em execução
+        let finBtn = '';
+        if (o.status === 'concluida' || o.status === 'execucao') {
+          finBtn = `<button class="btn-finalizar" onclick="abrirFinalizar(${o.id})">🏦 PIX + ⭐ Avaliação</button>`;
+        }
+
+        return `<div class="os-card${isAtrasada ? ' atrasada' : ''}">
+      <div class="os-header">
+        <div class="os-titulo">OS #${String(o.id).padStart(3, '0')} — ${o.svc || 'Serviço'}</div>
+        ${badge}
+      </div>
+      <div class="os-info">👤 ${o.cli || '—'}</div>
+      ${o.end ? `<div class="os-info">📍 ${o.end}</div>` : ''}
+      ${o.data ? `<div class="os-info">📅 ${formatDate(o.data)}${o.hora ? ' às ' + o.hora : ''}</div>` : ''}
+      ${o.item ? `<div class="os-info">🛋️ ${o.item}</div>` : ''}
+      ${isAtrasada ? '<div style="color:#C62828;font-size:12px;font-weight:700;margin-top:4px">⚠️ OS ATRASADA</div>' : ''}
+      ${o.obs ? `<div class="os-obs">${o.obs}</div>` : ''}
+      ${btns}
+      <div class="os-btns" style="margin-top:${btns ? '6' : '12'}px">
+        ${wppBtn}
+        ${finBtn}
+      </div>
+    </div>`;
+      }).join('');
+
+      setSyncBar('✅ Sincronizado');
+    }
+
+    // ===== RENDER AGENDA =====
+    function renderAgenda() {
+      if (!D || !_tecLogado) return;
+      const lista = document.getElementById('agenda-list');
+      const { ordens: minhas } = dadosFiltrados();
+
+      // Só pegar OS com data (futuras e de hoje), excluindo canceladas
+      const hoje = getHoje();
+      const agendadas = minhas
+        .filter(o => o.data && o.status !== 'cancelada' && o.status !== 'excluida')
+        .sort((a, b) => {
+          if (a.data !== b.data) return a.data.localeCompare(b.data);
+          return (a.hora || '').localeCompare(b.hora || '');
+        });
+
+      if (!agendadas.length) {
+        lista.innerHTML = '<div class="empty"><div class="empty-ic">📅</div>Nenhum agendamento encontrado</div>';
+        return;
+      }
+
+      // Agrupar por data
+      const grupos = {};
+      agendadas.forEach(o => {
+        const d = o.data;
+        if (!grupos[d]) grupos[d] = [];
+        grupos[d].push(o);
+      });
+
+      const dias = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+      let html = '';
+
+      Object.keys(grupos).sort().forEach(data => {
+        const dt = new Date(data + 'T12:00:00');
+        const wday = dias[dt.getDay()];
+        const dd = data.split('-')[2];
+        const isHoje = data === hoje;
+        const isPast = data < hoje;
+
+        html += `<div style="font-size:12px;font-weight:700;color:${isHoje ? '#2E7D32' : isPast ? '#C62828' : '#757575'};margin:16px 0 8px;text-transform:uppercase;letter-spacing:.5px">${isHoje ? '🟢 HOJE' : isPast ? '🔴 ATRASADO' : `📅 ${formatDate(data)}`} — ${wday}</div>`;
+
+        grupos[data].forEach(o => {
+          const statusColor = {
+            agendado: '#E3F2FD', pendente: '#FFF8E1', deslocamento: '#FFF3E0',
+            execucao: '#E8F5E9', concluida: '#F5F5F5'
+          }[o.status] || '#F5F5F5';
+          const statusTxt = {
+            agendado: '#1565C0', pendente: '#B8860B', deslocamento: '#E65100',
+            execucao: '#2E7D32', concluida: '#757575'
+          }[o.status] || '#555';
+          const statusLbl = {
+            agendado: '📅', pendente: '⏳', deslocamento: '🚗',
+            execucao: '🔧', concluida: '✅'
+          }[o.status] || '';
+
+          html += `<div class="ag-card">
+        <div class="ag-date">
+          <div class="ag-day">${dd}</div>
+          <div class="ag-wday">${wday}</div>
+        </div>
+        <div class="ag-div"></div>
+        <div class="ag-info">
+          <div class="ag-hora">${o.hora || '—'}</div>
+          <div class="ag-nome">👤 ${o.cli || '—'}</div>
+          <div class="ag-svc">${o.svc || o.item || 'Serviço'}${o.end ? ' · 📍 ' + o.end : ''}</div>
+        </div>
+        <span class="ag-status" style="background:${statusColor};color:${statusTxt}">${statusLbl}</span>
+      </div>`;
+        });
+      });
+
+      lista.innerHTML = html;
+    }
+
+    let _tecConcluirOSId = null;
+
+    // ===== MUDAR STATUS =====
+    async function mudarStatus(osId, novoStatus) {
+      if (novoStatus === 'concluida') {
+        _tecConcluirOSId = osId;
+        renderTecConcluirForm();
+        document.getElementById('tec-manchas').checked = false;
+        document.getElementById('tec-rasgos').checked = false;
+        document.getElementById('tec-odores').checked = false;
+        document.getElementById('tec-avarias-desc').value = '';
+        document.getElementById('tec-fotos-antes').value = '';
+        document.getElementById('tec-fotos-depois').value = '';
+        document.getElementById('m-tec-concluir').classList.add('open');
+        return;
+      }
+      const o = D.ordens.find(x => x.id === osId);
+      if (!o) return;
+      o.status = novoStatus;
+      o.em = new Date().toISOString();
+      renderOS();
+      renderAgenda();
+      setSyncBar('Salvando...');
+      try {
+        await sbSave(D);
+        setSyncBar('✅ Salvo');
+      } catch (e) {
+        setSyncBar('⚠️ Erro ao salvar');
+      }
+    }
+
+    function fecharTecConcluir() {
+      document.getElementById('m-tec-concluir').classList.remove('open');
+      _tecConcluirOSId = null;
+    }
+
+    function renderTecConcluirForm() {
+      const form = document.getElementById('tec-concluir-insumos');
+      if (!D.insumos || D.insumos.length === 0) {
+        form.innerHTML = '<div style="font-size:13px;color:#888;text-align:center;padding:10px">Nenhum insumo cadastrado para controle.</div>';
+        return;
+      }
+      form.innerHTML = D.insumos.map(i => `
+        <div style="display:flex;align-items:center;justify-content:space-between;background:#F9FAFB;padding:10px;border-radius:8px;margin-bottom:6px;border:1px solid #E5E7EB">
+          <div style="font-size:13px;color:#333;font-weight:600">${i.nome} <span style="font-size:11px;color:#888">(${i.un})</span></div>
+          <input type="text" inputmode="decimal" id="tec-insumo-${i.id}" placeholder="0" onfocus="this.select()"
+            style="width:70px;padding:6px;border:1px solid #D1D5DB;border-radius:6px;text-align:center;font-size:14px;font-family:inherit">
+        </div>
+      `).join('');
+    }
+
+    async function salvarTecConcluir() {
+      const o = D.ordens.find(x => x.id === _tecConcluirOSId);
+      if (!o) return;
+
+      // Quantidade Gasta Insumos
+      o.insumosGasto = [];
+      if (D.insumos) {
+        D.insumos.forEach(i => {
+          const el = document.getElementById('tec-insumo-' + i.id);
+          if (el) {
+            const val = parseFloat(el.value.replace(',', '.')) || 0;
+            if (val > 0) {
+              o.insumosGasto.push({ id: i.id, nome: i.nome, un: i.un, custo: i.custo || 0, qtd: val });
+            }
+          }
+        });
+      }
+
+      // Checklist de Inspeção (FABRIC STATE)
+      const fabricState = {
+        manchas: document.getElementById('tec-manchas').checked,
+        rasgos: document.getElementById('tec-rasgos').checked,
+        odores: document.getElementById('tec-odores').checked,
+        obs: document.getElementById('tec-avarias-desc').value.trim()
+      };
+
+      const teveAvaria = fabricState.manchas || fabricState.rasgos || fabricState.odores;
+      if (teveAvaria && !fabricState.obs) {
+        alert('Por favor, descreva os detalhes das avarias encontradas.');
+        return;
+      }
+      o.checklistAvarias = { teveAvaria: teveAvaria, desc: fabricState.obs, ...fabricState };
+
+      // Fotos (Obrigatório)
+      const fotosAntesArr = document.getElementById('tec-fotos-antes').files;
+      const fotosDepoisArr = document.getElementById('tec-fotos-depois').files;
+      if (!fotosAntesArr.length || !fotosDepoisArr.length) {
+        alert('É obrigatório anexar as fotos de Antes e Depois do serviço.');
+        return;
+      }
+      o.fotosConclusao = {
+        antes: Array.from(fotosAntesArr).map(f => f.name),
+        depois: Array.from(fotosDepoisArr).map(f => f.name)
+      };
+
+      o.status = 'concluida';
+      o.em = new Date().toISOString();
+      o.concluidaEm = o.em.split('T')[0];
+
+      fecharTecConcluir();
+
+      // Automação Pós-Serviço: Guia de Cuidados
+      setTimeout(() => {
+        const tel = getTelCliente(o.cli);
+        if (tel) {
+          const isImpermeabilizacao = o.svc.toLowerCase().includes('impermeabilização') || o.svc.toLowerCase().includes('blindagem');
+          const guia = isImpermeabilizacao
+            ? `🛡️ *GUIA DE CURA (IMPERMEABILIZAÇÃO)*:\n- Tempo de cura: 24h\n- Faça o teste da gota após a cura\n- 🚫 Proibido: Derivados de petróleo e químicos agressivos.`
+            : `✨ *GUIA DE SECAGEM (LIMPEZA)*:\n- Mantenha o ambiente ventilado\n- Tempo de secagem: 4h a 8h\n- 🚫 Proibido: Sentar/usar antes de estar 100% seco.`;
+
+          const msg = encodeURIComponent(`Olá ${o.cli}! Seu serviço foi finalizado. Seguem instruções importantes:\n\n${guia}\n\nObrigado por confiar na Dr. Home Clean! 🧼💚`);
+          if (confirm('Deseja enviar o Guia de Cuidados Pós-Serviço via WhatsApp? (Elite Feature)')) {
+            window.open('https://wa.me/' + limparTel(tel) + '?text=' + msg, '_blank');
+          }
+        }
+      }, 500);
+
+      // Abrir modal de PIX automaticamente
+      setTimeout(() => abrirFinalizar(o.id), 1200);
+
+      renderOS();
+      renderAgenda();
+      setSyncBar('Salvando...');
+      try {
+        await sbSave(D);
+        setSyncBar('✅ Salvo');
+      } catch (e) {
+        setSyncBar('⚠️ Erro ao salvar');
+      }
+    }
+
+    // ===== EXTRA =====
+    function abrirExtra(osId) {
+      _extraOSId = osId;
+      document.getElementById('extra-desc').value = '';
+      document.getElementById('extra-val').value = '';
+      document.getElementById('m-extra').classList.add('open');
+    }
+    function fecharExtra() {
+      document.getElementById('m-extra').classList.remove('open');
+      _extraOSId = null;
+    }
+    async function salvarExtra() {
+      const desc = document.getElementById('extra-desc').value.trim();
+      const val = parseFloat(document.getElementById('extra-val').value.replace(',', '.')) || 0;
+      if (!desc) { alert('Descreva o serviço extra.'); return; }
+      const o = D.ordens.find(x => x.id === _extraOSId);
+      if (!o) return;
+      o.obs = (o.obs ? o.obs + ' | ' : '') + 'EXTRA: ' + desc + (val ? ' +R$' + val.toFixed(2) : '');
+      if (val) o.val = (o.val || 0) + val;
+      o.em = new Date().toISOString();
+      fecharExtra();
+      renderOS();
+      setSyncBar('Salvando...');
+      try {
+        await sbSave(D);
+        setSyncBar('✅ Salvo');
+      } catch (e) {
+        setSyncBar('⚠️ Erro ao salvar');
+      }
+    }
+
+    // ===== FINALIZAR (PIX + AVALIAÇÃO) =====
+    let _finOSId = null;
+    function abrirFinalizar(osId) {
+      _finOSId = osId;
+      const o = D.ordens.find(x => x.id === osId);
+      if (!o) return;
+
+      // Valor
+      document.getElementById('fin-valor-os').textContent = formatCurrency(o.val);
+
+      // PIX key
+      const pixKey = (D.cfg && D.cfg.pix) ? D.cfg.pix : PIX_CHAVE;
+      document.getElementById('fin-pix-chave').textContent = pixKey;
+
+      // WhatsApp link com PIX + Avaliação
+      const telCli = limparTel(getTelCliente(o.cli));
+      const msgFinal = encodeURIComponent(
+        `Olá ${o.cli || ''}! 😊\n\nSeu serviço *Dr. Home Clean* foi concluído com sucesso! ✨🧹\n\n` +
+        `💰 *Valor:* ${formatCurrency(o.val)}\n\n` +
+        `🏦 *Pagamento via PIX:*\n` +
+        `Chave: ${pixKey}\n\n` +
+        `⭐ *Ficamos muito felizes com sua confiança!*\n` +
+        `Se puder, deixe sua avaliação no Google para nos ajudar:\n` +
+        `${GOOGLE_REVIEW_URL}\n\n` +
+        `Obrigado por escolher a Dr. Home Clean! 💚`
+      );
+
+      const wppLink = document.getElementById('fin-wpp-link');
+      if (telCli) {
+        wppLink.href = `https://wa.me/${telCli}?text=${msgFinal}`;
+        wppLink.style.display = 'flex';
+      } else {
+        wppLink.href = `https://wa.me/${WPP_EMPRESA}?text=${msgFinal}`;
+        wppLink.style.display = 'flex';
+      }
+
+      document.getElementById('m-finalizar').classList.add('open');
+    }
+
+    function fecharFinalizar() {
+      document.getElementById('m-finalizar').classList.remove('open');
+      _finOSId = null;
+    }
+
+    function copiarPix() {
+      const pix = document.getElementById('fin-pix-chave').textContent;
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(pix).then(() => {
+          const btn = event.target;
+          btn.textContent = '✅ Copiado!';
+          setTimeout(() => { btn.textContent = '📋 Copiar Chave PIX'; }, 2000);
+        });
+      } else {
+        // Fallback
+        const ta = document.createElement('textarea');
+        ta.value = pix;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        alert('Chave PIX copiada!');
+      }
+    }
+
+    // ===== AUTO LOGIN =====
+    (async function () {
+      try {
+        const s = sessionStorage.getItem('dhc_tec');
+        if (!s) return;
+        const info = JSON.parse(s);
+        setSyncBar('Reconectando...');
+        const nuvem = await sbGet();
+        if (!nuvem || !nuvem.conteudo) return;
+        D = nuvem.conteudo;
+        const tec = (D.tecnicosObj || []).find(t => t.id === info.id && t.senha === info.senha);
+        if (tec && tec.ativo) { _tecLogado = tec; abrirApp(); }
+        else {
+          alert('🚨 ACESSO REVOGADO EM TEMPO REAL ou credenciais inválidas.');
+          sessionStorage.removeItem('dhc_tec');
+          location.reload();
+        }
+      } catch (e) { }
+    })();
+  </script>
+</body>
+
+</html>
