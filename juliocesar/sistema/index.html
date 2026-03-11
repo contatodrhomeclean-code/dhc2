@@ -3671,6 +3671,7 @@
                 </div>
               <div id="cfg-sbkey-status" style="font-size:12px;margin-top:8px;display:none"></div>
               <div id="sync-manual-status" style="font-size:13px;margin-top:10px;display:none"></div>
+              <button class="btn btn-green" onclick="forceSyncPC()" style="margin-top:10px;background:#1e40af;box-shadow: 0 4px 10px rgba(30,64,175,0.3)">📤 ENVIAR TUDO DO PC PARA NUVEM</button>
             </div>
           </div>
           <button class="btn btn-green" onclick="salvarConfig()">💾 Salvar Configurações</button>
@@ -5983,6 +5984,18 @@
         setTimeout(() => renderSlots(), 50);
       }
       openM('m-os');
+    }
+    async function forceSyncPC() {
+      if (!confirm('Esta ação vai SOBREPOR tudo que está no Celular com o que você vê nesta tela do PC agora. Deseja continuar?')) return;
+      mostrarSync('salvando');
+      const ok = await sbUpsert(D);
+      if (ok) {
+        alert('✅ SUCESSO! Tudo que estava no PC foi enviado para a Nuvem. O Celular irá atualizar em alguns segundos.');
+        mostrarSync('ok');
+      } else {
+        alert('❌ ERRO ao enviar! Verifique sua internet.');
+        mostrarSync('erro');
+      }
     }
     function renderSlots() {
       const data = vv('o-data'), tec = vv('o-tec');
@@ -9264,16 +9277,6 @@ Qualquer dúvida, estamos à disposição!
     }
 
     (async function iniciar() {
-      // Boot: carrega local para mostrar rápido, depois substitui pela nuvem
-
-      // Mostra local removido para forçar nuvem (Cloud-Only)
-      /* 
-      try {
-        const local = localStorage.getItem('drhomeclean_data');
-        if (local) { const p = JSON.parse(local); if (p && p.clientes) { Object.assign(D, p); try { renderHome(); } catch (e) { } } }
-      } catch (e) { }
-      */
-
       // Baixa nuvem e aplica (nuvem é fonte da verdade)
       mostrarSync('carregando');
       try {
