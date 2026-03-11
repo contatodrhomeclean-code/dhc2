@@ -4972,7 +4972,6 @@
       if (nb) document.getElementById(nb)?.classList.add('active');
       window.scrollTo(0, 0);
       // Salva página atual para restaurar após reload
-      try { localStorage.setItem('dhc_last_page', p); } catch (e) { }
       try {
         if (p === 'home') renderHome();
         if (p === 'agenda') renderCal();
@@ -8333,7 +8332,6 @@ Qualquer dúvida, estamos à disposição!
       const sbkEl = document.getElementById('cfg-sbkey');
       if (sbkEl && sbkEl.value.trim()) {
         const k = sbkEl.value.trim();
-        localStorage.setItem('dhc_sb_key', k);
         // Atualiza a chave em memória
         window._SB_KEY_CUSTOM = k;
         const st = document.getElementById('cfg-sbkey-status');
@@ -9045,7 +9043,6 @@ Qualquer dúvida, estamos à disposição!
       if (st) { st.style.display = 'block'; st.innerHTML = '<span style="color:#856404">⏳ Enviando...</span>'; }
       mostrarSync('salvando');
       D._ts = new Date().toISOString();
-      try { localStorage.setItem('drhomeclean_data', JSON.stringify(D)); } catch (e) { }
       const ok = await sbUpsert(D);
       if (st) {
         st.style.display = 'block'; st.innerHTML = ok
@@ -9100,7 +9097,6 @@ Qualquer dúvida, estamos à disposição!
         D.tecnicos = N.tecnicos || D.tecnicos;
         D.categorias = N.categorias || D.categorias;
         D._ts = new Date().toISOString();
-        localStorage.setItem('drhomeclean_data', JSON.stringify(D));
         // Sobe resultado do merge pra nuvem (garante que ambos dispositivos ficam iguais)
         await sbUpsert(D);
         try { renderHome(); renderNotificacoes(); renderProps(); renderOS(); renderCal(); } catch (e) { }
@@ -9175,8 +9171,6 @@ Qualquer dúvida, estamos à disposição!
 
     function salvarLocal() {
       D._ts = new Date().toISOString();
-      try { localStorage.setItem('drhomeclean_data', JSON.stringify(D)); } catch (e) {
-        try { const s = JSON.parse(JSON.stringify(D)); s.clientes = s.clientes.map(c => ({ ...c, fotos: [] })); localStorage.setItem('drhomeclean_data', JSON.stringify(s)); } catch (e2) { }
       }
     }
 
@@ -9273,11 +9267,13 @@ Qualquer dúvida, estamos à disposição!
     (async function iniciar() {
       // Boot: carrega local para mostrar rápido, depois substitui pela nuvem
 
-      // Mostra local imediatamente (UX rápida)
+      // Mostra local removido para forçar nuvem (Cloud-Only)
+      /* 
       try {
         const local = localStorage.getItem('drhomeclean_data');
         if (local) { const p = JSON.parse(local); if (p && p.clientes) { Object.assign(D, p); try { renderHome(); } catch (e) { } } }
       } catch (e) { }
+      */
 
       // Baixa nuvem e aplica (nuvem é fonte da verdade)
       mostrarSync('carregando');
@@ -9312,7 +9308,7 @@ Qualquer dúvida, estamos à disposição!
 
       // Restaura última página
       try {
-        const lastPg = localStorage.getItem('dhc_last_page');
+        const lastPg = null; // Ignora última página (Força Início)
         if (lastPg && lastPg !== 'home') { setTimeout(() => { try { nav(lastPg); } catch (e) { } }, 100); }
       } catch (e) { }
 
@@ -9352,7 +9348,6 @@ Qualquer dúvida, estamos à disposição!
 
     // Salva local ao fechar a aba
     window.addEventListener('beforeunload', function () {
-      try { localStorage.setItem('drhomeclean_data', JSON.stringify(D)); } catch (e) { }
     });
 
     // ============ PWA: SERVICE WORKER INLINE ============
