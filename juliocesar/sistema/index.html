@@ -8303,18 +8303,12 @@ Qualquer dúvida, estamos à disposição!
       const fixosEl = document.getElementById('cfg-fixos'); if (fixosEl) fixosEl.value = c.fixos || 0;
       const metaEl = document.getElementById('cfg-meta'); if (metaEl) metaEl.value = c.meta || 0;
       const fidEl = document.getElementById('cfg-fid'); if (fidEl) fidEl.value = c.fid || 180;
-      // Chave Supabase — garante que a chave padrão está sempre salva
+      // Chave Supabase - Hardcoded
       const sbkEl = document.getElementById('cfg-sbkey');
       if (sbkEl) {
-        // Se não tiver chave salva, usa a padrão e já salva
-        if (!localStorage.getItem('dhc_sb_key')) {
-          localStorage.setItem('dhc_sb_key', SB_KEY_DEFAULT);
-          window._SB_KEY_CUSTOM = SB_KEY_DEFAULT;
-        }
-        const k = localStorage.getItem('dhc_sb_key') || SB_KEY_DEFAULT;
-        sbkEl.value = k;
+        sbkEl.value = SB_KEY;
         const st = document.getElementById('cfg-sbkey-status');
-        if (st) { st.style.display = 'block'; st.innerHTML = '<span style="color:var(--green)">✅ Chave configurada — testando conexão...</span>'; testarSupabase(); }
+        if (st) { st.style.display = 'block'; st.innerHTML = '<span style="color:var(--green)">✅ Conexão Direta (Hardcoded)</span>'; }
       }
       // Logo preview
       const prev = document.getElementById('cfg-logo-prev');
@@ -9276,10 +9270,8 @@ Qualquer dúvida, estamos à disposição!
       if (N.categorias) D.categorias = N.categorias;
     }
 
-    // Boot: carrega local para mostrar rápido, depois substitui pela nuvem
     (async function iniciar() {
-      if (!localStorage.getItem('dhc_sb_key')) localStorage.setItem('dhc_sb_key', SB_KEY_DEFAULT);
-      window._SB_KEY_CUSTOM = localStorage.getItem('dhc_sb_key') || SB_KEY_DEFAULT;
+      // Boot: carrega local para mostrar rápido, depois substitui pela nuvem
 
       // Mostra local imediatamente (UX rápida)
       try {
