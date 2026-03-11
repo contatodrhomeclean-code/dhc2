@@ -21,44 +21,11 @@
   <meta name="theme-color" content="#2E7D32">
   <meta name="description" content="Sistema de gestão Dr. Home Clean — Alto Padrão em Higienização">
 
-  <!-- Ícone gerado via canvas (não precisa de arquivo externo) -->
-  <script>
-    (function () {
-      try {
-        const c = document.createElement('canvas');
-        c.width = 512; c.height = 512;
-        const ctx = c.getContext('2d');
-        // Fundo verde
-        ctx.fillStyle = '#2E7D32';
-        ctx.beginPath(); ctx.roundRect(0, 0, 512, 512, 80); ctx.fill();
-        // Círculo dourado
-        ctx.fillStyle = '#C9A84C';
-        ctx.beginPath(); ctx.arc(256, 210, 120, 0, Math.PI * 2); ctx.fill();
-        // Letra D
-        ctx.fillStyle = '#F5F5F5';
-        ctx.font = 'bold 160px serif';
-        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-        ctx.fillText('Dr.', 256, 210);
-        // Texto HOME CLEAN
-        ctx.fillStyle = '#F0E68C';
-        ctx.font = 'bold 58px sans-serif';
-        ctx.fillText('HOME CLEAN', 256, 360);
-        const ico = c.toDataURL('image/png');
-        // Apple touch icon
-        const l = document.createElement('link');
-        l.rel = 'apple-touch-icon'; l.href = ico;
-        document.head.appendChild(l);
-        // Favicon
-        const f = document.createElement('link');
-        f.rel = 'icon'; f.type = 'image/png'; f.href = ico;
-        document.head.appendChild(f);
-        // Splash screen iOS (fundo verde com ícone)
-        const s = document.createElement('meta');
-        s.name = 'apple-mobile-web-app-status-bar-style'; s.content = 'black-translucent';
-        document.head.appendChild(s);
-      } catch (e) { }
-    })();
-  </script>
+  <link rel="icon" type="image/png" href="../favicon.png">
+  <link rel="apple-touch-icon" href="../favicon.png">
+  <meta property="og:title" content="Dr. Home Clean | Gestão de Alto Padrão">
+  <meta property="og:description" content="Sistema de gestão Dr. Home Clean — Alto Padrão em Higienização">
+  <meta property="og:image" content="https://drhomeclean.com.br/logo.png">
 
   <!-- Splash screen cor de fundo enquanto carrega -->
   <style>
