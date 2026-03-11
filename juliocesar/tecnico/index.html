@@ -955,7 +955,7 @@
         }
 
         _tecLogado = tec;
-        try { sessionStorage.setItem('dhc_tec', JSON.stringify({ id: tec.id, email: tec.email, senha: tec.senha })); } catch (e) { }
+        window._tec_logado_session = { id: tec.id, email: tec.email, senha: tec.senha };
         abrirApp();
       } catch (e) {
         setSyncBar('Erro: sem conexão');
@@ -966,7 +966,7 @@
       clearInterval(_polling);
       _tecLogado = null;
       D = null;
-      try { sessionStorage.removeItem('dhc_tec'); } catch (e) { }
+      window._tec_logado_session = null;
       document.getElementById('app').style.display = 'none';
       document.getElementById('pg-login').style.display = 'flex';
       document.getElementById('inp-email').value = '';
@@ -1423,12 +1423,10 @@
       }
     }
 
-    // ===== AUTO LOGIN & SYNC =====
     (async function () {
       try {
-        const s = sessionStorage.getItem('dhc_tec');
-        if (!s) return;
-        const info = JSON.parse(s);
+        if (!window._tec_logado_session) return;
+        const info = window._tec_logado_session;
         setSyncBar('Reconectando...');
 
         // Cliente Supabase para Real-time

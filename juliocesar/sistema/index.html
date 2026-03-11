@@ -8752,28 +8752,21 @@ Qualquer dúvida, estamos à disposição!
     // ============ LOGIN ============
     // Multi-storage para garantir sessão no PWA/celular
     function authSave(email) {
-      const d = JSON.stringify({ ok: true, email: email || 'contatodrhomeclean@gmail.com', ts: Date.now() });
-      try { localStorage.setItem('dhc_auth_v2', d); } catch (e) { }
-      try { sessionStorage.setItem('dhc_auth_v2', d); } catch (e) { }
+      window._auth_d = JSON.stringify({ ok: true, email: email || 'contatodrhomeclean@gmail.com', ts: Date.now() });
       try { document.cookie = 'dhc_auth=1;max-age=' + 60 * 60 * 24 * 365 + ';path=/'; } catch (e) { }
     }
     function authSenha(s) {
-      try { localStorage.setItem('dhc_senha_salva', s); } catch (e) { }
-      try { sessionStorage.setItem('dhc_senha_salva', s); } catch (e) { }
+      window._auth_s = s;
     }
     function authGet() {
-      try { const s = localStorage.getItem('dhc_auth_v2'); if (s) return JSON.parse(s); } catch (e) { }
-      try { const s = sessionStorage.getItem('dhc_auth_v2'); if (s) return JSON.parse(s); } catch (e) { }
-      return null;
+      return window._auth_d ? JSON.parse(window._auth_d) : null;
     }
     function senhaGet() {
-      try { const s = localStorage.getItem('dhc_senha_salva'); if (s) return s; } catch (e) { }
-      try { const s = sessionStorage.getItem('dhc_senha_salva'); if (s) return s; } catch (e) { }
-      return null;
+      return window._auth_s || null;
     }
     function authClear() {
-      try { localStorage.removeItem('dhc_auth_v2'); localStorage.removeItem('dhc_senha_salva'); } catch (e) { }
-      try { sessionStorage.clear(); } catch (e) { }
+      window._auth_d = null;
+      window._auth_s = null;
       try { document.cookie = 'dhc_auth=;max-age=0;path=/'; } catch (e) { }
     }
 
@@ -9291,30 +9284,23 @@ Qualquer dúvida, estamos à disposição!
         const nuvem = await sbGetComTs();
         if (nuvem && nuvem.conteudo && nuvem.conteudo.clientes) {
           aplicarNuvem(nuvem.conteudo);
-          salvarLocal(); // salva localmente mas NÃO sobe pra nuvem
           try { renderHome(); renderNotificacoes(); renderProps(); renderOS(); } catch (e) { }
           mostrarSync('ok');
         } else if (!nuvem) {
-          // Sem nuvem — sobe o local
           await sbUpsert(D);
           mostrarSync('ok');
         } else {
-          // Nuvem vazia — sobe local
           await sbUpsert(D);
           mostrarSync('ok');
         }
       } catch (e) { mostrarSync('erro'); }
 
-      // Verificar técnico logado na sessão
-      try {
-        const sTec = sessionStorage.getItem('dhc_tec_logado');
-        if (sTec) {
-          const info = JSON.parse(sTec);
-          const tec = (D.tecnicosObj || []).find(t => t.id === info.id && t.senha && t.ativo);
-          if (tec) loginComoTecnico(tec);
-          else sessionStorage.removeItem('dhc_tec_logado');
-        }
-      } catch (e) { }
+      // Verificar técnico logado na sessão (Apenas em memória)
+      if (window._tec_logado_session) {
+        const info = window._tec_logado_session;
+        const tec = (D.tecnicosObj || []).find(t => t.id === info.id && t.senha && t.ativo);
+        if (tec) loginComoTecnico(tec);
+      }
 
       // Restaura última página
       try {
