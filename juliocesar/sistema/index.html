@@ -8468,11 +8468,15 @@ Qualquer dúvida, estamos à disposição!
       salvarDados();
       renderTecnicos();
     }
-    function delTec(id) {
+    async function delTec(id) {
       if (!confirm('Excluir técnico?')) return;
       D.tecnicosObj = D.tecnicosObj.filter(x => x.id !== id);
       D.tecnicos = D.tecnicosObj.filter(t => t.ativo).map(t => t.nome);
-      salvarDados(); renderTecnicos();
+      mostrarSync('salvando');
+      const ok = await sbUpsert(D);
+      if (ok) alert('Técnico removido do Banco de Dados!');
+      renderTecnicos();
+      mostrarSync(ok ? 'ok' : 'erro');
     }
     function renderTecnicos() {
       // Cards de resumo
@@ -9232,6 +9236,7 @@ Qualquer dúvida, estamos à disposição!
     }
 
     function aplicarNuvem(N) {
+      if (!N || !N.clientes) return; // PROIBIR limpeza por dado vazio
       // Se nuvem foi resetada mais recentemente que local, substitui tudo diretamente
       if (N._resetAt && (!D._resetAt || N._resetAt > D._resetAt)) {
         D.clientes = N.clientes || []; D.ordens = N.ordens || []; D.propostas = N.propostas || [];
