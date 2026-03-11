@@ -665,11 +665,7 @@
   <!-- LOGIN -->
   <div id="pg-login">
     <div class="login-card">
-      <div class="login-logo">
-        <div class="login-logo-title">Dr.<span>HOME</span> CLEAN</div>
-        <div class="login-logo-sub">ALTO PADRÃO EM HIGIENIZAÇÃO</div>
-        <div class="login-logo-badge">👷 Área do Técnico</div>
-      </div>
+        <img src="../logo.png" alt="Dr. Home Clean" style="width:100%; max-height:80px; object-fit:contain; margin-bottom:15px">
       <div class="fgrp">
         <label>E-mail *</label>
         <input id="inp-email" type="email" placeholder="seu@email.com" autocomplete="email" required>
@@ -870,6 +866,13 @@
   <script>
     const SB_URL = 'https://xnpexqbcwhmzxyzbnxiu.supabase.co';
     const SB_KEY = 'sb_publishable_VG2H-mmt7qbLkBPseAsfqw_KkzNb_0e';
+    const _sb = supabase.createClient(SB_URL, SB_KEY, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true
+      }
+    });
     const GOOGLE_REVIEW_URL = 'https://g.page/r/CWnF2jY4DQVeEBM/review';
     const PIX_CHAVE = '66992394914';
     const WPP_EMPRESA = '5566992394914';
@@ -960,7 +963,7 @@
         }
 
         _tecLogado = tec;
-        window._tec_logado_session = { id: tec.id, email: tec.email, senha: tec.senha };
+        // Supabase handle persistence automatically
         abrirApp();
       } catch (e) {
         setSyncBar('Erro: sem conexão');
@@ -971,7 +974,7 @@
       clearInterval(_polling);
       _tecLogado = null;
       D = null;
-      window._tec_logado_session = null;
+      _sb.auth.signOut();
       document.getElementById('app').style.display = 'none';
       document.getElementById('pg-login').style.display = 'flex';
       document.getElementById('inp-email').value = '';
@@ -1430,17 +1433,17 @@
 
     (async function () {
       try {
-        if (!window._tec_logado_session) return;
-        const info = window._tec_logado_session;
         setSyncBar('Reconectando...');
-
-        // Cliente Supabase para Real-time
-        const _sb = supabase.createClient(SB_URL, SB_KEY);
-
+        
+        const { data: { session } } = await _sb.auth.getSession();
+        if (!session) return;
+        
+        // Reconecta usando os dados da nuvem se houver sessão
         const nuvem = await sbGet();
         if (!nuvem || !nuvem.conteudo) return;
         D = nuvem.conteudo;
-        const tec = (D.tecnicosObj || []).find(t => t.id === info.id && t.senha === info.senha);
+        const email = session.user.email;
+        const tec = (D.tecnicosObj || []).find(t => t.email && t.email.toLowerCase() === email.toLowerCase());
         if (tec && tec.ativo) {
           _tecLogado = tec;
           abrirApp();
