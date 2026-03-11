@@ -686,7 +686,10 @@
         <div class="topbar-logo">Dr.<span>HOME</span> CLEAN</div>
         <div id="tec-nome-top" class="topbar-sub"></div>
       </div>
-      <button class="btn-sair" onclick="sair()">Sair</button>
+      <div style="display:flex;gap:8px">
+        <button onclick="forceSync()" style="background:var(--green);color:#fff;border:none;border-radius:10px;padding:8px 14px;font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:4px">🔄 Sync</button>
+        <button class="btn-sair" onclick="sair()">Sair</button>
+      </div>
     </div>
     <div id="sync-bar" class="sync-bar">Carregando...</div>
 
@@ -910,6 +913,16 @@
     }
 
     // ===== LOGIN =====
+    async function forceSync() {
+      if (typeof setSyncBar === 'function') setSyncBar('Sincronizando...');
+      try {
+        await sbSave(D);
+        if (typeof setSyncBar === 'function') setSyncBar('✅ Sincronizado');
+      } catch (e) {
+        if (typeof setSyncBar === 'function') setSyncBar('⚠️ Erro ao sincronizar');
+      }
+    }
+
     async function entrar() {
       const emailInp = document.getElementById('inp-email');
       const email = emailInp.value.trim().toLowerCase();

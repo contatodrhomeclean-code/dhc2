@@ -3552,6 +3552,8 @@
                   class="mais-arrow">›</span></button>
               <button class="mais-item" onclick="nav('configuracoes')">⚙️ <span>Configurações da Empresa</span><span
                   class="mais-arrow">›</span></button>
+              <button class="mais-item" onclick="forceSyncUp()" style="background:var(--greenlt);color:var(--green);border-top:1px solid var(--gray3)">☁️ <span>Sincronizar Celular com Nuvem</span><span
+                  class="mais-arrow">›</span></button>
             </div>
             <div class="card" style="padding:0;overflow:hidden">
               <button class="mais-item" onclick="exportarBackup()">📤 <span>Exportar Backup (JSON)</span><span
@@ -6184,7 +6186,7 @@
         }
       }
     }
-    function delOS(id) { if (!confirm('Excluir esta OS?')) return; D.ordens = D.ordens.filter(o => o.id !== id); renderOS(); renderHome(); }
+    function delOS(id) { if (!confirm('Excluir esta OS?')) return; D.ordens = D.ordens.filter(o => o.id !== id); renderOS(); renderHome(); salvarDados(); }
     let filtroOS = 'todas';
     function fOS(f, btn) { filtroOS = f; document.querySelectorAll('#pg-ordens .tab').forEach(t => t.classList.remove('active')); btn.classList.add('active'); renderOS(); }
     function renderOS() {
@@ -6682,7 +6684,7 @@ Qualquer dúvida, estamos à disposição!
         el('btn-sc').onclick = () => { c.nome = vv('c-nome'); c.tel = vv('c-tel'); c.email = vv('c-email'); c.doc = vv('c-doc'); c.tipo = cliTipo; c.cep = vv('c-cep'); c.end = vv('c-end'); c.num = vv('c-num'); c.cid = vv('c-cid'); c.uf = vv('c-uf'); c.obs = vv('c-obs'); c.fotos = [...novaCliFotos]; closeM('m-cli'); el('btn-sc').onclick = saveCli; el('m-cli-tit').textContent = 'Cadastrar Novo Cliente'; el('btn-sc').textContent = 'Cadastrar Cliente'; novaCliFotos = []; renderClis(); };
       }, 50);
     }
-    function delCli(id) { if (!confirm('Excluir cliente?')) return; D.clientes = D.clientes.filter(c => c.id !== id); renderClis(); renderHome(); }
+    function delCli(id) { if (!confirm('Excluir cliente?')) return; D.clientes = D.clientes.filter(c => c.id !== id); renderClis(); renderHome(); salvarDados(); }
     function wppCliente(id) {
       const c = D.clientes.find(x => x.id === id); if (!c) return;
       window.open(`https://wa.me/55${(c.tel || '').replace(/\D/g, '')}?text=${encodeURIComponent('Olá ' + c.nome + '! 😊')}`, '_blank');
@@ -7465,7 +7467,7 @@ Qualquer dúvida, estamos à disposição!
       salvarDados(); closeM('m-cat'); renderCatalogo();
     }
     function toggleCat(id) { const s = D.catalogo.find(x => x.id === id); if (s) { s.ativo = !s.ativo; renderCatalogo(); } }
-    function delCat(id) { if (!confirm('Excluir?')) return; D.catalogo = D.catalogo.filter(x => x.id !== id); renderCatalogo(); }
+    function delCat(id) { if (!confirm('Excluir?')) return; D.catalogo = D.catalogo.filter(x => x.id !== id); renderCatalogo(); salvarDados(); }
     function renderCatalogo(busca = '') {
       const lista = busca ? D.catalogo.filter(s => s.nome.toLowerCase().includes(busca.toLowerCase()) || s.cat.toLowerCase().includes(busca.toLowerCase())) : D.catalogo;
       const catList = el('cat-list');
@@ -9216,16 +9218,24 @@ Qualquer dúvida, estamos à disposição!
     }
     let _salvando = false;
     function salvarDados() {
-      salvarLocal();
+      // Prioridade Mobile local imediata para performance
+      salvarLocal(); 
+      
       clearTimeout(_saveTimer);
       _saveTimer = setTimeout(async function () {
         if (_salvando) return;
         _salvando = true;
         mostrarSync('salvando');
+        
+        // Prioridade Nuvem (Mobile-First)
         const ok = await sbUpsert(D);
         mostrarSync(ok ? 'ok' : 'erro');
+        
+        // Se sincronizou com nuvem, garante que local está espelhando a nuvem
+        if (ok) salvarLocal(); 
+        
         _salvando = false;
-      }, 1500);
+      }, 1000);
     }
 
     function travarBtn(btn, ms) {
