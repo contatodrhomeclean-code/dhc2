@@ -3009,7 +3009,7 @@
       }
 
       .page .content {
-        max-width: 1200px
+        max-width: none
       }
 
       .card-row {
@@ -3548,12 +3548,8 @@
                   class="mais-arrow">›</span></button>
               <button class="mais-item" onclick="nav('tecnicos')">👷 <span>Gerenciar Técnicos</span><span
                   class="mais-arrow">›</span></button>
-              <button class="mais-item" onclick="crmTab='fidelizacao'; nav('crm')">🔄 <span>Fidelização Especial</span><span
-                  class="mais-arrow">›</span></button>
               <button class="mais-item" onclick="nav('configuracoes')">⚙️ <span>Configurações da Empresa</span><span
-                  class="mais-arrow">›</span></button>
-              <button class="mais-item" onclick="forceSyncUp()" style="background:var(--greenlt);color:var(--green);border-top:1px solid var(--gray3)">☁️ <span>Sincronizar Celular com Nuvem</span><span
-                  class="mais-arrow">›</span></button>
+                   class="mais-arrow">›</span></button>
             </div>
             <div class="card" style="padding:0;overflow:hidden">
               <button class="mais-item" onclick="exportarBackup()">📤 <span>Exportar Backup (JSON)</span><span
@@ -3673,19 +3669,7 @@
                 <div style="font-size:11px;color:var(--gray);margin-top:6px;line-height:1.5">
                   No Supabase: <strong>Project Settings → API Keys → Publishable key</strong>
                 </div>
-              </div>
               <div id="cfg-sbkey-status" style="font-size:12px;margin-top:8px;display:none"></div>
-              <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
-                <button onclick="forceSyncUp()"
-                  style="padding:10px 16px;background:var(--green);color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:13px;font-weight:700">📤
-                  Enviar para Nuvem</button>
-                <button onclick="forceSyncDown()"
-                  style="padding:10px 16px;background:#1565C0;color:#fff;border:none;border-radius:10px;cursor:pointer;font-size:13px;font-weight:700">📥
-                  Baixar da Nuvem</button>
-                <button onclick="testarSupabase()"
-                  style="padding:10px 16px;background:var(--gray4);color:var(--dark);border:1.5px solid var(--gray3);border-radius:10px;cursor:pointer;font-size:13px">🔌
-                  Testar Conexão</button>
-              </div>
               <div id="sync-manual-status" style="font-size:13px;margin-top:10px;display:none"></div>
             </div>
           </div>
@@ -9218,24 +9202,17 @@ Qualquer dúvida, estamos à disposição!
     }
     let _salvando = false;
     function salvarDados() {
-      // Prioridade Mobile local imediata para performance
-      salvarLocal(); 
-      
+      salvarLocal();
+      // Totalmente Automático: salvamento imediato e debounced para não sobrecarregar
       clearTimeout(_saveTimer);
       _saveTimer = setTimeout(async function () {
         if (_salvando) return;
         _salvando = true;
         mostrarSync('salvando');
-        
-        // Prioridade Nuvem (Mobile-First)
         const ok = await sbUpsert(D);
         mostrarSync(ok ? 'ok' : 'erro');
-        
-        // Se sincronizou com nuvem, garante que local está espelhando a nuvem
-        if (ok) salvarLocal(); 
-        
         _salvando = false;
-      }, 1000);
+      }, 500); // Reduzido para 500ms para resposta mais rápida
     }
 
     function travarBtn(btn, ms) {
