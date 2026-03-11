@@ -674,7 +674,9 @@
         <input id="inp-senha" type="password" placeholder="••••••••" autocomplete="current-password"
           onkeydown="if(event.key==='Enter')entrar()">
       </div>
-      <div id="login-erro" class="erro" style="background:#FFEBEE; color:#C62828; padding:10px; border-radius:8px; margin-bottom:14px; font-weight:600; font-size:12px;">E-mail ou senha incorretos.</div>
+      <div id="login-erro" class="erro"
+        style="background:#FFEBEE; color:#C62828; padding:10px; border-radius:8px; margin-bottom:14px; font-weight:600; font-size:12px;">
+        E-mail ou senha incorretos.</div>
       <button class="btn-login" onclick="entrar()">Acessar Painel →</button>
     </div>
   </div>
@@ -810,41 +812,52 @@
   <!-- MODAL FINALIZAR SERVIÇO (PIX + Avaliação Google) -->
   <div id="m-finalizar" class="modal-bg">
     <div class="modal-box" style="border-top: 5px solid #25D366; padding: 24px;">
-      <div style="font-size:22px;font-weight:900;color:#1B5E20;margin-bottom:20px;text-align:center">✅ Serviço Concluído!</div>
+      <div style="font-size:22px;font-weight:900;color:#1B5E20;margin-bottom:20px;text-align:center">✅ Serviço
+        Concluído!</div>
 
       <!-- Valor -->
-      <div style="background:linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); border-radius:16px; padding:20px; margin-bottom:20px; text-align:center;">
-        <div style="font-size:12px;color:#2E7D32;font-weight:700;text-transform:uppercase;margin-bottom:4px">Valor do Serviço</div>
+      <div
+        style="background:linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); border-radius:16px; padding:20px; margin-bottom:20px; text-align:center;">
+        <div style="font-size:12px;color:#2E7D32;font-weight:700;text-transform:uppercase;margin-bottom:4px">Valor do
+          Serviço</div>
         <div style="font-size:36px;font-weight:900;color:#1B5E20" id="fin-valor-os">R$ 0,00</div>
       </div>
 
       <!-- PIX -->
       <div style="background:#fff; border-radius:16px; padding:16px; margin-bottom:20px; border:2px solid #E8F5E9;">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
-            <img src="https://blog.caviarcriativo.com/wp-content/uploads/2025/03/Download-Logo-Pix.png" style="height:18px">
-            <span style="font-size:14px;font-weight:800;color:#333">Pagamento via PIX</span>
+          <img src="https://blog.caviarcriativo.com/wp-content/uploads/2025/03/Download-Logo-Pix.png"
+            style="height:18px">
+          <span style="font-size:14px;font-weight:800;color:#333">Pagamento via PIX</span>
         </div>
         <div style="font-size:12px;color:#666;margin-bottom:8px">Chave da empresa:</div>
-        <div class="fin-pix-key" id="fin-pix-chave" style="background:#f9f9f9; border:2px dashed #A5D6A7; border-radius:12px; padding:12px; text-align:center; font-family: monospace; font-size:14px; color:#1B5E20; margin-bottom:12px;">66992394914</div>
-        <button class="btn-copiar" onclick="copiarPix()" style="width:100%; background:#1B5E20; color:#fff; border-radius:10px; font-weight:700;">📋 COPIAR CHAVE PIX</button>
+        <div class="fin-pix-key" id="fin-pix-chave"
+          style="background:#f9f9f9; border:2px dashed #A5D6A7; border-radius:12px; padding:12px; text-align:center; font-family: monospace; font-size:14px; color:#1B5E20; margin-bottom:12px;">
+          66992394914</div>
+        <button class="btn-copiar" onclick="copiarPix()"
+          style="width:100%; background:#1B5E20; color:#fff; border-radius:10px; font-weight:700;">📋 COPIAR CHAVE
+          PIX</button>
       </div>
 
       <!-- Avaliação -->
-      <a href="https://g.page/r/CWnF2jY4DQVeEBM/review" target="_blank" rel="noopener" style="display:flex; align-items:center; gap:10px; background:#FFFBEB; border:1.5px solid #FEF3C7; padding:12px; border-radius:12px; text-decoration:none; margin-bottom:20px;">
+      <a href="https://g.page/r/CWnF2jY4DQVeEBM/review" target="_blank" rel="noopener"
+        style="display:flex; align-items:center; gap:10px; background:#FFFBEB; border:1.5px solid #FEF3C7; padding:12px; border-radius:12px; text-decoration:none; margin-bottom:20px;">
         <span style="font-size:24px">⭐</span>
         <div style="flex:1">
-            <div style="font-size:13px;font-weight:800;color:#92400E">Avaliar no Google</div>
-            <div style="font-size:11px;color:#B45309">Toque para deixar sua nota.</div>
+          <div style="font-size:13px;font-weight:800;color:#92400E">Avaliar no Google</div>
+          <div style="font-size:11px;color:#B45309">Toque para deixar sua nota.</div>
         </div>
       </a>
 
       <!-- WhatsApp Button -->
-      <a class="btn-enviar-wpp" id="fin-wpp-link" href="#" target="_blank" rel="noopener" style="width:100%; padding:16px; background:#25D366; color:#fff; border-radius:14px; font-size:15px; font-weight:800; display:flex; align-items:center; justify-content:center; gap:10px; text-decoration:none; box-shadow: 0 4px 12px rgba(37,211,102,0.2);">
+      <a class="btn-enviar-wpp" id="fin-wpp-link" href="#" target="_blank" rel="noopener"
+        style="width:100%; padding:16px; background:#25D366; color:#fff; border-radius:14px; font-size:15px; font-weight:800; display:flex; align-items:center; justify-content:center; gap:10px; text-decoration:none; box-shadow: 0 4px 12px rgba(37,211,102,0.2);">
         📲 ENVIAR PIX + AVALIAÇÃO
       </a>
 
       <div style="margin-top:16px">
-        <button class="btn-cancel" style="width:100%; border:none; color:#999; font-weight:700;" onclick="fecharFinalizar()">FECHAR</button>
+        <button class="btn-cancel" style="width:100%; border:none; color:#999; font-weight:700;"
+          onclick="fecharFinalizar()">FECHAR</button>
       </div>
     </div>
   </div>
@@ -917,7 +930,7 @@
       const email = emailInp.value.trim().toLowerCase();
       const senhaInp = document.getElementById('inp-senha');
       const senha = senhaInp.value.trim();
-      
+
       if (!email) { alert('O campo E-mail é obrigatório.'); emailInp.focus(); return; }
       if (!senha) { alert('Digite sua senha.'); senhaInp.focus(); return; }
 
@@ -927,9 +940,9 @@
         if (!nuvem || !nuvem.conteudo) { setSyncBar('Erro de conexão'); return; }
         D = nuvem.conteudo;
 
-        const tec = (D.tecnicosObj || []).find(t => 
-          t.email && t.email.toLowerCase() === email && 
-          t.senha === senha && 
+        const tec = (D.tecnicosObj || []).find(t =>
+          t.email && t.email.toLowerCase() === email &&
+          t.senha === senha &&
           t.ativo
         );
 
@@ -1417,18 +1430,18 @@
         if (!s) return;
         const info = JSON.parse(s);
         setSyncBar('Reconectando...');
-        
+
         // Cliente Supabase para Real-time
         const _sb = supabase.createClient(SB_URL, SB_KEY);
-        
+
         const nuvem = await sbGet();
         if (!nuvem || !nuvem.conteudo) return;
         D = nuvem.conteudo;
         const tec = (D.tecnicosObj || []).find(t => t.id === info.id && t.senha === info.senha);
-        if (tec && tec.ativo) { 
-          _tecLogado = tec; 
-          abrirApp(); 
-          
+        if (tec && tec.ativo) {
+          _tecLogado = tec;
+          abrirApp();
+
           // Real-time Sync
           _sb.channel('tec_sync')
             .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'dados', filter: 'id=eq.principal' }, payload => {
