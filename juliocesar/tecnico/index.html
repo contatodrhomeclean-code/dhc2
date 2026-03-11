@@ -666,12 +666,16 @@
         <div class="login-logo-badge">👷 Área do Técnico</div>
       </div>
       <div class="fgrp">
+        <label>E-mail *</label>
+        <input id="inp-email" type="email" placeholder="seu@email.com" autocomplete="email" required>
+      </div>
+      <div class="fgrp">
         <label>Senha</label>
         <input id="inp-senha" type="password" placeholder="••••••••" autocomplete="current-password"
           onkeydown="if(event.key==='Enter')entrar()">
       </div>
-      <div id="login-erro" class="erro">Senha incorreta. Tente novamente.</div>
-      <button class="btn-login" onclick="entrar()">Entrar →</button>
+      <div id="login-erro" class="erro" style="background:#FFEBEE; color:#C62828; padding:10px; border-radius:8px; margin-bottom:14px; font-weight:600; font-size:12px;">E-mail ou senha incorretos.</div>
+      <button class="btn-login" onclick="entrar()">Acessar Painel →</button>
     </div>
   </div>
 
@@ -805,39 +809,42 @@
 
   <!-- MODAL FINALIZAR SERVIÇO (PIX + Avaliação Google) -->
   <div id="m-finalizar" class="modal-bg">
-    <div class="modal-box">
-      <div class="modal-title">✅ Serviço Finalizado!</div>
+    <div class="modal-box" style="border-top: 5px solid #25D366; padding: 24px;">
+      <div style="font-size:22px;font-weight:900;color:#1B5E20;margin-bottom:20px;text-align:center">✅ Serviço Concluído!</div>
 
       <!-- Valor -->
-      <div class="fin-section">
-        <div class="fin-section-title">💰 Valor do Serviço</div>
-        <div class="fin-valor" id="fin-valor-os">R$ 0,00</div>
+      <div style="background:linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); border-radius:16px; padding:20px; margin-bottom:20px; text-align:center;">
+        <div style="font-size:12px;color:#2E7D32;font-weight:700;text-transform:uppercase;margin-bottom:4px">Valor do Serviço</div>
+        <div style="font-size:36px;font-weight:900;color:#1B5E20" id="fin-valor-os">R$ 0,00</div>
       </div>
 
       <!-- PIX -->
-      <div class="fin-section">
-        <div class="fin-section-title">🏦 Pagamento via PIX</div>
-        <div style="font-size:12px;color:#757575;margin-bottom:8px">Chave PIX da empresa:</div>
-        <div class="fin-pix-key" id="fin-pix-chave">contatodrhomeclean@gmail.com</div>
-        <button class="btn-copiar" onclick="copiarPix()">📋 Copiar Chave PIX</button>
+      <div style="background:#fff; border-radius:16px; padding:16px; margin-bottom:20px; border:2px solid #E8F5E9;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+            <img src="https://blog.caviarcriativo.com/wp-content/uploads/2025/03/Download-Logo-Pix.png" style="height:18px">
+            <span style="font-size:14px;font-weight:800;color:#333">Pagamento via PIX</span>
+        </div>
+        <div style="font-size:12px;color:#666;margin-bottom:8px">Chave da empresa:</div>
+        <div class="fin-pix-key" id="fin-pix-chave" style="background:#f9f9f9; border:2px dashed #A5D6A7; border-radius:12px; padding:12px; text-align:center; font-family: monospace; font-size:14px; color:#1B5E20; margin-bottom:12px;">66992394914</div>
+        <button class="btn-copiar" onclick="copiarPix()" style="width:100%; background:#1B5E20; color:#fff; border-radius:10px; font-weight:700;">📋 COPIAR CHAVE PIX</button>
       </div>
 
-      <!-- Avaliação Google -->
-      <div class="fin-section">
-        <div class="fin-section-title">⭐ Avaliação no Google</div>
-        <div style="font-size:12px;color:#757575;margin-bottom:8px">Peça ao cliente para avaliar:</div>
-        <a class="btn-google" href="https://g.page/r/CWnF2jY4DQVeEBM/review" target="_blank" rel="noopener">
-          ⭐ Abrir Avaliação no Google
-        </a>
-      </div>
-
-      <!-- Enviar tudo via WhatsApp -->
-      <a class="btn-enviar-wpp" id="fin-wpp-link" href="#" target="_blank" rel="noopener">
-        📲 Enviar PIX + Avaliação via WhatsApp
+      <!-- Avaliação -->
+      <a href="https://g.page/r/CWnF2jY4DQVeEBM/review" target="_blank" rel="noopener" style="display:flex; align-items:center; gap:10px; background:#FFFBEB; border:1.5px solid #FEF3C7; padding:12px; border-radius:12px; text-decoration:none; margin-bottom:20px;">
+        <span style="font-size:24px">⭐</span>
+        <div style="flex:1">
+            <div style="font-size:13px;font-weight:800;color:#92400E">Avaliar no Google</div>
+            <div style="font-size:11px;color:#B45309">Toque para deixar sua nota.</div>
+        </div>
       </a>
 
-      <div style="margin-top:14px">
-        <button class="btn-cancel" style="width:100%" onclick="fecharFinalizar()">Fechar</button>
+      <!-- WhatsApp Button -->
+      <a class="btn-enviar-wpp" id="fin-wpp-link" href="#" target="_blank" rel="noopener" style="width:100%; padding:16px; background:#25D366; color:#fff; border-radius:14px; font-size:15px; font-weight:800; display:flex; align-items:center; justify-content:center; gap:10px; text-decoration:none; box-shadow: 0 4px 12px rgba(37,211,102,0.2);">
+        📲 ENVIAR PIX + AVALIAÇÃO
+      </a>
+
+      <div style="margin-top:16px">
+        <button class="btn-cancel" style="width:100%; border:none; color:#999; font-weight:700;" onclick="fecharFinalizar()">FECHAR</button>
       </div>
     </div>
   </div>
@@ -904,25 +911,36 @@
 
     // ===== LOGIN =====
     async function entrar() {
-      const senha = document.getElementById('inp-senha').value.trim();
-      if (!senha) return;
+      const emailInp = document.getElementById('inp-email');
+      const email = emailInp.value.trim().toLowerCase();
+      const senhaInp = document.getElementById('inp-senha');
+      const senha = senhaInp.value.trim();
+      
+      if (!email) { alert('O campo E-mail é obrigatório.'); emailInp.focus(); return; }
+      if (!senha) { alert('Digite sua senha.'); senhaInp.focus(); return; }
 
-      setSyncBar('Verificando...');
+      setSyncBar('Autenticando...');
       try {
         const nuvem = await sbGet();
         if (!nuvem || !nuvem.conteudo) { setSyncBar('Erro de conexão'); return; }
         D = nuvem.conteudo;
 
-        const tec = (D.tecnicosObj || []).find(t => t.senha && t.senha === senha && t.ativo);
+        const tec = (D.tecnicosObj || []).find(t => 
+          t.email && t.email.toLowerCase() === email && 
+          t.senha === senha && 
+          t.ativo
+        );
+
         if (!tec) {
           document.getElementById('login-erro').style.display = 'block';
-          document.getElementById('inp-senha').value = '';
+          document.getElementById('login-erro').textContent = 'E-mail ou senha incorretos / Acesso desativado.';
+          senhaInp.value = '';
           setSyncBar('');
           return;
         }
 
         _tecLogado = tec;
-        try { sessionStorage.setItem('dhc_tec', JSON.stringify({ id: tec.id, senha: tec.senha })); } catch (e) { }
+        try { sessionStorage.setItem('dhc_tec', JSON.stringify({ id: tec.id, email: tec.email, senha: tec.senha })); } catch (e) { }
         abrirApp();
       } catch (e) {
         setSyncBar('Erro: sem conexão');
@@ -936,7 +954,9 @@
       try { sessionStorage.removeItem('dhc_tec'); } catch (e) { }
       document.getElementById('app').style.display = 'none';
       document.getElementById('pg-login').style.display = 'flex';
+      document.getElementById('inp-email').value = '';
       document.getElementById('inp-senha').value = '';
+      document.getElementById('login-erro').style.display = 'none';
     }
 
     function abrirApp() {
@@ -1388,20 +1408,47 @@
       }
     }
 
-    // ===== AUTO LOGIN =====
+    // ===== AUTO LOGIN & SYNC =====
     (async function () {
       try {
         const s = sessionStorage.getItem('dhc_tec');
         if (!s) return;
         const info = JSON.parse(s);
         setSyncBar('Reconectando...');
+        
+        // Cliente Supabase para Real-time
+        const _sb = supabase.createClient(SB_URL, SB_KEY);
+        
         const nuvem = await sbGet();
         if (!nuvem || !nuvem.conteudo) return;
         D = nuvem.conteudo;
         const tec = (D.tecnicosObj || []).find(t => t.id === info.id && t.senha === info.senha);
-        if (tec && tec.ativo) { _tecLogado = tec; abrirApp(); }
+        if (tec && tec.ativo) { 
+          _tecLogado = tec; 
+          abrirApp(); 
+          
+          // Real-time Sync
+          _sb.channel('tec_sync')
+            .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'dados', filter: 'id=eq.principal' }, payload => {
+              if (payload.new && payload.new.conteudo) {
+                console.log('🔄 Sincronização Técnico ativada!');
+                D = payload.new.conteudo;
+                // Kill-switch: verifica se ainda está ativo
+                const t = (D.tecnicosObj || []).find(x => x.id === _tecLogado.id);
+                if (!t || !t.ativo) {
+                  alert('🚨 ACESSO REVOGADO. Sua conta foi desativada.');
+                  sair();
+                  return;
+                }
+                renderOS();
+                renderAgenda();
+                setSyncBar('✅ Atualizado');
+              }
+            })
+            .subscribe();
+        }
         else {
-          alert('🚨 ACESSO REVOGADO EM TEMPO REAL ou credenciais inválidas.');
+          alert('🚨 ACESSO REVOGADO ou credenciais inválidas.');
           sessionStorage.removeItem('dhc_tec');
           location.reload();
         }

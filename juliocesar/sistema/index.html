@@ -701,49 +701,52 @@
       body {
         max-width: none !important;
         margin: 0 !important;
+        overflow-x: hidden !important;
       }
       #app-shell {
         display: flex;
         flex-direction: row;
+        width: 100% !important;
       }
       #app-main {
         flex: 1;
-        margin-left: 240px;
+        margin-left: 260px;
         min-width: 0;
+        width: calc(100% - 260px) !important;
       }
       #app-content {
         max-width: none !important;
-        width: 100%;
+        width: 100% !important;
+        padding: 0 !important;
       }
       .page {
         max-width: none !important;
+        width: 100% !important;
+        padding: 0 0 20px 0 !important;
       }
       .content {
-        padding: 20px 24px;
-        max-width: 1200px;
-        margin: 0 auto;
+        padding: 24px 32px;
+        max-width: none !important;
+        width: 100% !important;
+        margin: 0 !important;
       }
       .hdr {
-        padding-left: 24px;
-        padding-right: 24px;
+        padding-left: 32px;
+        padding-right: 32px;
+        width: 100% !important;
       }
       .nav {
         display: none !important;
       }
-      .page {
-        padding-bottom: 20px;
-      }
       /* Fidelização grid — 3 colunas no PC */
       .fid-grid {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)) !important;
+        gap: 20px !important;
       }
       /* Stats 4 colunas no PC */
       .stats-4-grid {
-        grid-template-columns: repeat(4, 1fr);
-      }
-      /* Cards de resumo do técnico — 3 colunas */
-      .card-row {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 16px !important;
       }
     }
 
@@ -3543,6 +3546,8 @@
                   class="mais-arrow">›</span></button>
               <button class="mais-item" onclick="nav('catalogo')">🛠️ <span>Catálogo & Insumos</span><span
                   class="mais-arrow">›</span></button>
+              <button class="mais-item" onclick="nav('tecnicos')">👷 <span>Gerenciar Técnicos</span><span
+                  class="mais-arrow">›</span></button>
               <button class="mais-item" onclick="crmTab='fidelizacao'; nav('crm')">🔄 <span>Fidelização Especial</span><span
                   class="mais-arrow">›</span></button>
               <button class="mais-item" onclick="nav('configuracoes')">⚙️ <span>Configurações da Empresa</span><span
@@ -4418,7 +4423,8 @@
             <option value="concluida">✅ Finalizado</option>
             <option value="cancelada">❌ Cancelado</option>
           </select></div>
-        <div class="fgrp"><label>Observações</label><textarea id="o-obs" placeholder="Detalhes..."></textarea></div>
+        <div class="fgrp"><label>📝 Observações Gerais</label><textarea id="o-obs" placeholder="Detalhes..."></textarea></div>
+        <div class="fgrp"><label>🛠 Observações Técnicas (Equipamentos, Insumos...)</label><textarea id="o-obs-tec" placeholder="Observações para o técnico ou histórico futuro..."></textarea></div>
         <div id="os-slots-warn" class="hidden"
           style="padding:10px;background:var(--redlt);border-radius:10px;font-size:12.5px;color:var(--red)"></div>
       </div>
@@ -4503,45 +4509,41 @@
 
   <!-- MODAL: FINALIZAR OS COM PIX + AVALIAÇÃO GOOGLE -->
   <div class="mo" id="m-fin-pix" style="z-index:310">
-    <div class="modal" style="max-width:100%">
+    <div class="modal" style="max-width:100%; border-top: 5px solid #25D366;">
       <div class="modal-handle"></div>
-      <div class="flex aic mb12">
-        <div class="modal-title" style="margin:0">✅ Enviar PIX + Avaliação</div>
+      <div class="flex aic mb16">
+        <div style="font-size:20px;font-weight:900;color:#1B5E20">💰 Checkout PIX</div>
         <button class="modal-close" onclick="closeM('m-fin-pix')" style="position:static;margin-left:auto">×</button>
       </div>
 
       <!-- Valor -->
-      <div style="background:var(--greenlt);border-radius:14px;padding:16px;margin-bottom:14px;text-align:center">
-        <div style="font-size:12px;color:var(--gray);margin-bottom:4px">Valor do Serviço</div>
-        <div style="font-size:28px;font-weight:900;color:var(--green)" id="fin-pix-valor">R$ 0,00</div>
+      <div style="background:linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); border-radius:16px; padding:20px; margin-bottom:16px; text-align:center; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);">
+        <div style="font-size:13px;color:#2E7D32;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Valor do Atendimento</div>
+        <div style="font-size:36px;font-weight:900;color:#1B5E20" id="fin-pix-valor">R$ 0,00</div>
       </div>
 
       <!-- PIX -->
-      <div
-        style="background:var(--gray4);border-radius:14px;padding:16px;margin-bottom:14px;border:1px solid var(--gray3)">
-        <div style="font-size:14px;font-weight:700;margin-bottom:10px">🏦 Pagamento via PIX</div>
-        <div style="font-size:12px;color:var(--gray);margin-bottom:6px">Chave PIX da empresa:</div>
-        <div id="fin-pix-key-admin"
-          style="background:#fff;border:2px dashed var(--green);border-radius:10px;padding:14px;text-align:center;font-size:14px;font-weight:600;color:#1B5E20;word-break:break-all;margin-bottom:8px">
-          66992394914</div>
-        <button onclick="copiarPixAdmin()"
-          style="width:100%;padding:10px;background:var(--greenlt);color:var(--green);border:1.5px solid #A5D6A7;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit"
-          id="btn-copiar-pix-admin">📋 Copiar Chave PIX</button>
+      <div style="background:#fff; border-radius:16px; padding:16px; margin-bottom:16px; border:2px solid #E8F5E9; position:relative;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+            <img src="https://blog.caviarcriativo.com/wp-content/uploads/2025/03/Download-Logo-Pix.png" style="height:20px">
+            <span style="font-size:15px;font-weight:800;color:#333">Pagamento Instantâneo</span>
+        </div>
+        <div style="font-size:12px;color:#666;margin-bottom:8px">Copie a chave abaixo para pagar no seu banco:</div>
+        <div id="fin-pix-key-admin" style="background:#f9f9f9; border:2px dashed #A5D6A7; border-radius:12px; padding:16px; text-align:center; font-family: 'Courier New', monospace; font-size:16px; font-weight:700; color:#1B5E20; word-break:break-all; margin-bottom:12px;">66992394914</div>
+        <button onclick="copiarPixAdmin()" class="btn-primary" style="width:100%; padding:14px; background:#1B5E20; font-size:15px; border-radius:12px;" id="btn-copiar-pix-admin">📋 COPIAR CHAVE PIX</button>
       </div>
 
       <!-- Avaliação Google -->
-      <div
-        style="background:var(--gray4);border-radius:14px;padding:16px;margin-bottom:14px;border:1px solid var(--gray3)">
-        <div style="font-size:14px;font-weight:700;margin-bottom:10px">⭐ Avaliação no Google</div>
-        <div style="font-size:12px;color:var(--gray);margin-bottom:8px">Peça ao cliente para avaliar no Google Meu
-          Negócio:</div>
-        <a href="https://g.page/r/CWnF2jY4DQVeEBM/review" target="_blank" rel="noopener"
-          style="width:100%;padding:12px;background:#FFFBEB;color:#B45309;border:1.5px solid #FDE68A;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;box-sizing:border-box">⭐
-          Abrir Avaliação no Google</a>
+      <div style="background:#FFFBEB; border-radius:16px; padding:16px; margin-bottom:16px; border:1.5px solid #FEF3C7; display:flex; align-items:center; gap:12px;">
+        <div style="font-size:24px">⭐</div>
+        <div style="flex:1">
+            <div style="font-size:14px;font-weight:800;color:#92400E">Sua opinião vale muito!</div>
+            <div style="font-size:12px;color:#B45309">Toque abaixo para nos avaliar no Google.</div>
+        </div>
+        <a href="https://g.page/r/CWnF2jY4DQVeEBM/review" target="_blank" rel="noopener" style="background:#F59E0B; color:#fff; text-decoration:none; padding:8px 12px; border-radius:8px; font-size:12px; font-weight:800; white-space:nowrap">AVALIAR</a>
       </div>
 
       <!-- Enviar tudo via WhatsApp -->
-      <a id="fin-pix-wpp-admin" href="#" target="_blank" rel="noopener"
         style="width:100%;padding:14px;background:#25D366;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;box-sizing:border-box;margin-bottom:12px">📲
         Enviar PIX + Avaliação via WhatsApp</a>
 
@@ -5527,6 +5529,7 @@
       el('vp-wpp').onclick = () => envWpp(id);
       el('vp-os').onclick = () => { closeM('m-vp'); gerarOS(id); };
       el('vp-venda').onclick = () => { marcarVenda(id); closeM('m-vp'); };
+      el('vp-nfechou').style.display = p.status === 'aprovada' ? 'none' : 'inline-block';
       el('vp-nfechou').onclick = () => { naoFechou(id); closeM('m-vp'); };
       openM('m-vp');
     }
@@ -6932,48 +6935,6 @@ Qualquer dúvida, estamos à disposição!
       setTimeout(renderGraficoFinanceiro, 50);
     }
 
-    function renderFinChart() {
-      const canvas = el('fin-chart'); if (!canvas) return;
-      const ctx = canvas.getContext('2d');
-      if (window.myFinChart) window.myFinChart.destroy();
-
-      const meses = ult6Meses();
-      const receitas = meses.map(m => D.receitas.filter(r => r.data.startsWith(m)).reduce((acc, r) => acc + r.val, 0));
-      const labels = meses.map(m => m.split('-').reverse().join('/'));
-
-      const gradient = ctx.createLinearGradient(0, 0, 0, 300);
-      gradient.addColorStop(0, 'rgba(46, 125, 50, 0.4)');
-      gradient.addColorStop(1, 'rgba(46, 125, 50, 0)');
-
-      window.myFinChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels,
-          datasets: [{
-            label: 'Receita Mensal',
-            data: receitas,
-            borderColor: '#2E7D32',
-            borderWidth: 3,
-            backgroundColor: gradient,
-            fill: true,
-            tension: 0.4,
-            pointRadius: 4,
-            pointBackgroundColor: '#fff',
-            pointBorderColor: '#2E7D32',
-            pointBorderWidth: 2
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
-          scales: {
-            y: { display: false, beginAtZero: true },
-            x: { grid: { display: false }, border: { display: false } }
-          }
-        }
-      });
-    }
     function renderPgtoResumo() {
       const { ini, fim } = getFinDatas();
       const osConc = D.ordens.filter(o => o.status === 'concluida' && dentroPeríodo(o.concluidaEm || (o.data || o.em || '').slice(0, 10) || hoje(), ini, fim));
@@ -7017,123 +6978,92 @@ Qualquer dúvida, estamos à disposição!
       if (!canvas) return;
       const ctx = canvas.getContext('2d');
       const W = canvas.offsetWidth || canvas.parentElement.offsetWidth || 300;
-      const H = 160;
+      const H = 200;
       canvas.width = W; canvas.height = H;
+      
       const hoje = new Date();
       const meses = [];
       for (let i = 5; i >= 0; i--) {
         const d = new Date(hoje.getFullYear(), hoje.getMonth() - i, 1);
         meses.push({ ano: d.getFullYear(), mes: d.getMonth(), label: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'][d.getMonth()] });
       }
-      const receitas = meses.map(m =>
-        D.ordens.filter(o => o.status === 'concluida' && o.data && new Date(o.data + 'T12:00').getFullYear() === m.ano && new Date(o.data + 'T12:00').getMonth() === m.mes).reduce((s, o) => s + (o.val || 0), 0)
-        + D.receitas.filter(r => { if (!r.data) return false; const d = new Date(r.data + 'T12:00'); return r.status === 'recebido' && !r.auto && d.getFullYear() === m.ano && d.getMonth() === m.mes }).reduce((s, r) => s + r.val, 0)
-      );
-      const insumos = meses.map(m =>
-        D.despesas.filter(d => (d.cat || '').toLowerCase().includes('insumo') && d.status === 'paga' && d.venc && new Date(d.venc + 'T12:00').getFullYear() === m.ano && new Date(d.venc + 'T12:00').getMonth() === m.mes).reduce((s, d) => s + d.val, 0)
-      );
-      const maxVal = Math.max(...receitas, ...insumos, 1);
-      const padL = 44, padR = 12, padT = 18, padB = 24;
+
+      const receitas = meses.map(m => {
+        const osVal = D.ordens.filter(o => o.status === 'concluida' && o.data && new Date(o.data + 'T12:00').getFullYear() === m.ano && new Date(o.data + 'T12:00').getMonth() === m.mes).reduce((s, o) => s + (o.val || 0), 0);
+        const recVal = D.receitas.filter(r => { 
+          if (!r.data) return false; 
+          const d = new Date(r.data + 'T12:00'); 
+          return r.status === 'recebido' && !r.auto && d.getFullYear() === m.ano && d.getMonth() === m.mes;
+        }).reduce((s, r) => s + r.val, 0);
+        return osVal + recVal;
+      });
+
+      const lucros = meses.map((m, i) => {
+        const despVal = D.despesas.filter(d => d.status === 'paga' && d.venc && new Date(d.venc + 'T12:00').getFullYear() === m.ano && new Date(d.venc + 'T12:00').getMonth() === m.mes).reduce((s, d) => s + d.val, 0);
+        return receitas[i] - despVal;
+      });
+
+      const maxVal = Math.max(...receitas, ...lucros, 100);
+      const padL = 50, padR = 20, padT = 30, padB = 30;
       const chartW = W - padL - padR;
       const chartH = H - padT - padB;
+      
       ctx.clearRect(0, 0, W, H);
-      // Linhas de grade + eixo Y
-      const steps = 4;
-      ctx.textAlign = 'right'; ctx.font = '10px Inter,sans-serif'; ctx.fillStyle = '#bbb';
-      for (let i = 0; i <= steps; i++) {
-        const y = padT + chartH - chartH * i / steps;
-        const val = maxVal * i / steps;
-        ctx.strokeStyle = '#f0f0ee'; ctx.lineWidth = 1;
-        ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke();
-        const lbl = val >= 1000 ? (val / 1000).toFixed(val >= 10000 ? 0 : 1) + 'k' : Math.round(val).toString();
-        ctx.fillText(lbl, padL - 4, y + 3);
+      
+      // Eixo Y e Grid
+      ctx.textAlign = 'right'; ctx.font = '11px Inter,sans-serif'; ctx.fillStyle = '#999';
+      for (let i = 0; i <= 4; i++) {
+        const y = padT + chartH - (chartH * i / 4);
+        const val = maxVal * i / 4;
+        ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y);
+        ctx.strokeStyle = '#f0f0f0'; ctx.lineWidth = 1; ctx.stroke();
+        ctx.fillText(val >= 1000 ? (val/1000).toFixed(1) + 'k' : Math.round(val), padL - 10, y + 4);
       }
-      const grpW = chartW / (meses.length - 1);
-      // Função para ponto X/Y
-      const px = (i) => padL + i * grpW;
-      const py = (val) => padT + chartH - Math.max((val / maxVal) * chartH, 0);
-      // Área preenchida receita
-      const gradArea = ctx.createLinearGradient(0, padT, 0, padT + chartH);
-      gradArea.addColorStop(0, 'rgba(46,125,50,0.18)');
-      gradArea.addColorStop(1, 'rgba(46,125,50,0.01)');
-      ctx.beginPath();
-      ctx.moveTo(px(0), py(receitas[0]));
-      for (let i = 1; i < meses.length; i++) {
-        const x0 = px(i - 1), y0 = py(receitas[i - 1]), x1 = px(i), y1 = py(receitas[i]);
-        const cpx = (x0 + x1) / 2;
-        ctx.bezierCurveTo(cpx, y0, cpx, y1, x1, y1);
-      }
-      ctx.lineTo(px(meses.length - 1), padT + chartH);
-      ctx.lineTo(px(0), padT + chartH);
-      ctx.closePath();
-      ctx.fillStyle = gradArea; ctx.fill();
-      // Linha receita
-      ctx.beginPath();
-      ctx.moveTo(px(0), py(receitas[0]));
-      for (let i = 1; i < meses.length; i++) {
-        const x0 = px(i - 1), y0 = py(receitas[i - 1]), x1 = px(i), y1 = py(receitas[i]);
-        const cpx = (x0 + x1) / 2;
-        ctx.bezierCurveTo(cpx, y0, cpx, y1, x1, y1);
-      }
-      ctx.strokeStyle = '#2E7D32'; ctx.lineWidth = 2.5; ctx.lineJoin = 'round'; ctx.stroke();
-      // Área preenchida despesa
-      const hasDespesas = despesas.some(d => d > 0);
-      if (hasDespesas) {
-        const gradAreaD = ctx.createLinearGradient(0, padT, 0, padT + chartH);
-        gradAreaD.addColorStop(0, 'rgba(248,113,113,0.15)');
-        gradAreaD.addColorStop(1, 'rgba(248,113,113,0.01)');
-        ctx.beginPath();
-        ctx.moveTo(px(0), py(despesas[0]));
-        for (let i = 1; i < meses.length; i++) {
-          const x0 = px(i - 1), y0 = py(despesas[i - 1]), x1 = px(i), y1 = py(despesas[i]);
-          const cpx = (x0 + x1) / 2;
-          ctx.bezierCurveTo(cpx, y0, cpx, y1, x1, y1);
-        }
-        ctx.lineTo(px(meses.length - 1), padT + chartH);
-        ctx.lineTo(px(0), padT + chartH);
-        ctx.closePath();
-        ctx.fillStyle = gradAreaD; ctx.fill();
-        // Linha despesa
-        ctx.beginPath();
-        ctx.moveTo(px(0), py(despesas[0]));
-        for (let i = 1; i < meses.length; i++) {
-          const x0 = px(i - 1), y0 = py(despesas[i - 1]), x1 = px(i), y1 = py(despesas[i]);
-          const cpx = (x0 + x1) / 2;
-          ctx.bezierCurveTo(cpx, y0, cpx, y1, x1, y1);
-        }
-        ctx.strokeStyle = '#f87171'; ctx.lineWidth = 2; ctx.stroke();
-      }
-      // Pontos e labels
+
+      const stepX = chartW / (meses.length - 1);
+      const getX = (i) => padL + i * stepX;
+      const getY = (v) => padT + chartH - (Math.max(v, 0) / maxVal * chartH);
+
+      // Área Receita
+      const gradRec = ctx.createLinearGradient(0, padT, 0, padT + chartH);
+      gradRec.addColorStop(0, 'rgba(46, 125, 50, 0.2)');
+      gradRec.addColorStop(1, 'rgba(46, 125, 50, 0)');
+      ctx.beginPath(); ctx.moveTo(getX(0), getY(receitas[0]));
+      for(let i=1; i<meses.length; i++) ctx.lineTo(getX(i), getY(receitas[i]));
+      ctx.lineTo(getX(meses.length-1), padT+chartH); ctx.lineTo(getX(0), padT+chartH);
+      ctx.fillStyle = gradRec; ctx.fill();
+
+      // Linha Receita (Faturamento)
+      ctx.beginPath(); ctx.moveTo(getX(0), getY(receitas[0]));
+      for(let i=1; i<meses.length; i++) ctx.lineTo(getX(i), getY(receitas[i]));
+      ctx.strokeStyle = '#2E7D32'; ctx.lineWidth = 3; ctx.stroke();
+
+      // Linha Lucro
+      ctx.beginPath(); ctx.moveTo(getX(0), getY(lucros[0]));
+      for(let i=1; i<meses.length; i++) ctx.lineTo(getX(i), getY(lucros[i]));
+      ctx.strokeStyle = '#C9A84C'; ctx.lineWidth = 2.5; ctx.setLineDash([5, 5]); ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Pontos e Labels
       meses.forEach((m, i) => {
-        const isAtual = (i === meses.length - 1);
-        // Ponto receita
-        ctx.beginPath();
-        ctx.arc(px(i), py(receitas[i]), isAtual ? 5 : 3.5, 0, Math.PI * 2);
-        ctx.fillStyle = isAtual ? '#2E7D32' : '#fff';
-        ctx.strokeStyle = '#2E7D32'; ctx.lineWidth = 2;
-        ctx.fill(); ctx.stroke();
-        // Label valor no ponto atual
-        if (isAtual && receitas[i] > 0) {
-          ctx.fillStyle = '#2E7D32'; ctx.font = 'bold 10px Inter,sans-serif'; ctx.textAlign = 'center';
-          const lbl = receitas[i] >= 1000 ? (receitas[i] / 1000).toFixed(1) + 'k' : 'R$' + receitas[i];
-          ctx.fillText(lbl, px(i), py(receitas[i]) - 10);
-        }
-        // Label mês
-        ctx.fillStyle = isAtual ? '#2E7D32' : '#999';
-        ctx.font = isAtual ? 'bold 10px Inter,sans-serif' : '10px Inter,sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(m.label, px(i), H - 6);
+        // Ponto Receita
+        ctx.beginPath(); ctx.arc(getX(i), getY(receitas[i]), 5, 0, Math.PI*2);
+        ctx.fillStyle = '#2E7D32'; ctx.fill();
+        ctx.beginPath(); ctx.arc(getX(i), getY(receitas[i]), 3, 0, Math.PI*2);
+        ctx.fillStyle = '#fff'; ctx.fill();
+
+        // Mês
+        ctx.textAlign = 'center'; ctx.fillStyle = '#666'; ctx.font = '10px Inter,sans-serif';
+        ctx.fillText(m.label, getX(i), H - 10);
       });
+
       // Legenda
-      ctx.textAlign = 'left'; ctx.font = '10px Inter,sans-serif';
-      ctx.strokeStyle = '#2E7D32'; ctx.lineWidth = 2.5;
-      ctx.beginPath(); ctx.moveTo(padL, 8); ctx.lineTo(padL + 18, 8); ctx.stroke();
-      ctx.fillStyle = '#555'; ctx.fillText('Receita', padL + 22, 12);
-      if (hasDespesas) {
-        ctx.strokeStyle = '#f87171'; ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.moveTo(padL + 75, 8); ctx.lineTo(padL + 93, 8); ctx.stroke();
-        ctx.fillStyle = '#555'; ctx.fillText('Despesa', padL + 97, 12);
-      }
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#2E7D32'; ctx.fillRect(padL, 5, 12, 12);
+      ctx.fillStyle = '#333'; ctx.font = 'bold 11px Inter'; ctx.fillText('Faturamento Bruto', padL + 16, 15);
+      
+      ctx.strokeStyle = '#C9A84C'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(padL + 130, 11); ctx.lineTo(padL + 145, 11); ctx.stroke();
+      ctx.fillStyle = '#333'; ctx.fillText('Lucro Líquido', padL + 150, 15);
     }
 
     function renderFinBody() {
@@ -8895,6 +8825,14 @@ Qualquer dúvida, estamos à disposição!
       }
     }
 
+    function logarSucesso(email) {
+      if (email) authSave(email);
+      var pg = document.getElementById('pg-login');
+      if (pg) { pg.style.display = 'none'; pg.style.visibility = 'hidden'; }
+      try { renderHome(); } catch (e) { }
+      nav('home');
+    }
+
     function fazerLogin() {
       try {
         var inpE = document.getElementById('login-email');
@@ -8903,6 +8841,11 @@ Qualquer dúvida, estamos à disposição!
         var valS = inpS ? inpS.value.trim() : '';
 
         // DEBUG: console.log('Login attempt:', valE, valS);
+
+        if (valE === 'contatodrhomeclean@gmail.com' && valS === 'JulioCritter*94') {
+          logarSucesso(valE);
+          return;
+        }
 
         if ((valE === 'contatodrhomeclean@gmail.com' || valE === 'admin') && valS === 'drhome123') {
           authSave('contatodrhomeclean@gmail.com'); authSenha(valS);
@@ -9047,17 +8990,12 @@ Qualquer dúvida, estamos à disposição!
 
     // ============ SUPABASE — NUVEM ============
     const SB_URL = 'https://xnpexqbcwhmzxyzbnxiu.supabase.co';
-    const SB_KEY_DEFAULT = 'sb_publishable_VG2H-mmt7qbLkBPseAsfqw_KkzNb_0e';
-    // Usa chave salva pelo usuário se disponível, senão a padrão
-    function getSBKey() {
-      const k = window._SB_KEY_CUSTOM || localStorage.getItem('dhc_sb_key') || SB_KEY_DEFAULT;
-      // Garante que a chave padrão sempre fica salva no localStorage
-      if (!localStorage.getItem('dhc_sb_key')) {
-        localStorage.setItem('dhc_sb_key', SB_KEY_DEFAULT);
-        window._SB_KEY_CUSTOM = SB_KEY_DEFAULT;
-      }
-      return k;
-    }
+    const SB_KEY = 'sb_publishable_VG2H-mmt7qbLkBPseAsfqw_KkzNb_0e';
+    
+    // Cliente Supabase global para Real-time
+    const _sb = supabase.createClient(SB_URL, SB_KEY);
+
+    function getSBKey() { return SB_KEY; }
 
     async function sbGet() {
       try {
@@ -9399,21 +9337,38 @@ Qualquer dúvida, estamos à disposição!
         if (lastPg && lastPg !== 'home') { setTimeout(() => { try { nav(lastPg); } catch (e) { } }, 100); }
       } catch (e) { }
 
-      // Polling a cada 15s: baixa nuvem e aplica se mudou
+      // Polling de fallback (mantido por segurança, mas com tempo maior)
       let _tsUltimoSync = '';
       setInterval(async function () {
         try {
           const nuvem = await sbGetComTs();
           if (!nuvem || !nuvem.conteudo) return;
-          if (nuvem.atualizado_em === _tsUltimoSync) return; // sem mudança
+          if (nuvem.atualizado_em === _tsUltimoSync) return;
           _tsUltimoSync = nuvem.atualizado_em;
-          // Nuvem mudou — aplicar sempre, nuvem substitui local
           aplicarNuvem(nuvem.conteudo);
           salvarLocal();
           try { renderHome(); renderProps(); renderOS(); renderCal(); renderFin(); renderClis(); } catch (e) { }
           mostrarSync('ok');
         } catch (e) { }
-      }, 15 * 1000);
+      }, 60 * 1000);
+
+      // ============ REAL-TIME SYNC (SUPABASE CHANNELS) ============
+      try {
+        _sb.channel('dados_changes')
+          .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'dados', filter: 'id=eq.principal' }, payload => {
+            console.log('🔄 Sincronização em tempo real recebida!');
+            if (payload.new && payload.new.conteudo) {
+              const N = payload.new.conteudo;
+              if (payload.new.atualizado_em === _tsUltimoSync) return;
+              _tsUltimoSync = payload.new.atualizado_em;
+              aplicarNuvem(N);
+              salvarLocal();
+              try { renderHome(); renderProps(); renderOS(); renderCal(); renderFin(); renderClis(); } catch (e) { }
+              mostrarSync('ok');
+            }
+          })
+          .subscribe();
+      } catch (e) { console.warn('Erro ao iniciar Real-time Sync:', e); }
     })();
 
     // Salva local ao fechar a aba
