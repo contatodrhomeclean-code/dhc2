@@ -5,11 +5,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Dr. Home Clean — Técnico</title>
-  <link rel="icon" type="image/png" href="../favicon.png">
-  <link rel="apple-touch-icon" href="../favicon.png">
+  <link rel="icon" type="image/png" href="../logo_oficial.png">
+  <link rel="apple-touch-icon" href="../logo_oficial.png">
   <meta property="og:title" content="Dr. Home Clean | Gestão de Alto Padrão">
   <meta property="og:description" content="Sistema Técnico Dr. Home Clean — Alto Padrão em Higienização">
-  <meta property="og:image" content="https://drhomeclean.com.br/logo.png">
+  <meta property="og:image" content="https://drhomeclean.com.br/logo_oficial.png">
   <style>
     * {
       box-sizing: border-box;
@@ -665,7 +665,11 @@
   <!-- LOGIN -->
   <div id="pg-login">
     <div class="login-card">
-        <img src="../logo.png" alt="Dr. Home Clean" style="width:100%; max-height:80px; object-fit:contain; margin-bottom:15px">
+      <div class="login-logo">
+        <div class="login-logo-title">Dr.<span>HOME</span> CLEAN</div>
+        <div class="login-logo-sub">ALTO PADRÃO EM HIGIENIZAÇÃO</div>
+        <div class="login-logo-badge">👷 Área do Técnico</div>
+      </div>
       <div class="fgrp">
         <label>E-mail *</label>
         <input id="inp-email" type="email" placeholder="seu@email.com" autocomplete="email" required>
@@ -870,7 +874,8 @@
       auth: {
         persistSession: true,
         autoRefreshToken: true,
-        detectSessionInUrl: true
+        detectSessionInUrl: true,
+        storage: window.localStorage // Explicitly use localStorage for persistence
       }
     });
     const GOOGLE_REVIEW_URL = 'https://g.page/r/CWnF2jY4DQVeEBM/review';
@@ -1434,10 +1439,10 @@
     (async function () {
       try {
         setSyncBar('Reconectando...');
-        
+
         const { data: { session } } = await _sb.auth.getSession();
         if (!session) return;
-        
+
         // Reconecta usando os dados da nuvem se houver sessão
         const nuvem = await sbGet();
         if (!nuvem || !nuvem.conteudo) return;
