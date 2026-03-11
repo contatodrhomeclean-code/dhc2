@@ -8974,6 +8974,9 @@ Qualquer dúvida, estamos à disposição!
       } catch(e) {}
     }, 30 * 1000);
 
+    // Limpeza de cache antigo para forçar nuvem (Cloud-Only)
+    try { localStorage.removeItem('drhomeclean_data'); } catch(e) {}
+    
     // Inicializa e observa resize
     initDesktop();
     updateDesktopNav('home');
