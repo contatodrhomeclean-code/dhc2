@@ -1091,15 +1091,26 @@
           concluida: '<span class="badge badge-concluida">✅ Concluída</span>',
         }[o.status] || '';
 
-        // Botões de status
+        // Barra de Ações Sequenciais v2.0
         let btns = '';
         if (o.status !== 'concluida') {
-          btns = `<div class="os-btns">
-        ${(o.status === 'pendente' || o.status === 'agendado') ? `<button class="btn-status btn-desl" onclick="mudarStatus(${o.id},'deslocamento')">🚗 Deslocamento</button>` : ''}
-        ${o.status === 'deslocamento' ? `<button class="btn-status btn-exec" onclick="mudarStatus(${o.id},'execucao')">🔧 Iniciar</button>` : ''}
-        ${o.status === 'execucao' ? `<button class="btn-status btn-conc" onclick="mudarStatus(${o.id},'concluida')">✅ Concluir</button>` : ''}
-        <button class="btn-extra" onclick="abrirExtra(${o.id})">➕ Extra</button>
-      </div>`;
+          btns = `<div class="os-btns" style="display:flex;flex-direction:column;gap:8px">
+            ${(o.status === 'pendente' || o.status === 'agendado') ? `<button class="btn-status btn-desl" onclick="tecMudarStatus(${o.id},'deslocamento')">🚗 Sair para o Cliente</button>` : ''}
+            
+            ${o.status === 'deslocamento' ? `<button class="btn-status btn-exec" onclick="tecMudarStatus(${o.id},'execucao')">🔧 Iniciar Serviço</button>` : ''}
+            
+            ${o.status === 'execucao' ? `
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+                <button class="btn-status btn-avaria" onclick="abrirAvarias(${o.id})" style="background:#FFF3E0;color:#E65100;border:1.5px solid #FFCC80">⚠️ Avarias/Obs</button>
+                <button class="btn-status btn-foto" onclick="abrirFotos(${o.id})" style="background:#E3F2FD;color:#1565C0;border:1.5px solid #90CAF9">📸 Fotos Antes</button>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+                <button class="btn-status btn-extra" onclick="abrirSvcExtra(${o.id})" style="background:#E8F5E9;color:#2E7D32;border:1.5px solid #A5D6A7">➕ Serviço Extra</button>
+                <button class="btn-status btn-insumo" onclick="abrirInsumos(${o.id})" style="background:#F3E5F5;color:#7B1FA2;border:1.5px solid #CE93D8">💧 Gasto Insumos</button>
+              </div>
+              <button class="btn-status btn-conc" style="margin-top:8px;background:#FF6B6B" onclick="abrirFinalizarOS(${o.id})">🚩 Finalizar O.S.</button>
+            ` : ''}
+          </div>`;
         }
 
         // Botão WhatsApp Lembrete (só para agendados/pendentes)
@@ -1219,7 +1230,57 @@
 
     let _tecConcluirOSId = null;
 
-    // ===== MUDAR STATUS =====
+    // ===== MUDAR STATUS v2.0 (Técnico) =====
+    async function tecMudarStatus(id, novo) {
+      const o = D.ordens.find(x => x.id === id); if (!o) return;
+      const agora = new Date().toISOString();
+      o.status = novo;
+      if (novo === 'deslocamento') o.horaSaida = agora;
+      if (novo === 'execucao') o.horaInicio = agora;
+      
+      setSyncBar('Salvando...');
+      try {
+        await sbSave(D);
+        renderOS();
+        setSyncBar('✅ Salvo');
+      } catch (e) {
+        setSyncBar('⚠️ Erro ao salvar');
+      }
+    }
+
+    function abrirAvarias(id) {
+      const o = D.ordens.find(x => x.id === id); if (!o) return;
+      _tecConcluirOSId = id;
+      // Reutiliza parte do modal de conclusão para Checklist Prévio
+      document.getElementById('m-tec-concluir').classList.add('open');
+      // Filtra para mostrar apenas checklists se necessário ou ajusta layout
+    }
+
+    function abrirFotos(id) {
+      const o = D.ordens.find(x => x.id === id); if (!o) return;
+      _tecConcluirOSId = id;
+      document.getElementById('m-tec-concluir').classList.add('open');
+      document.getElementById('tec-fotos-antes').focus();
+    }
+
+    function abrirSvcExtra(id) {
+       abrirExtra(id); // Reutiliza função existente
+    }
+
+    function abrirInsumos(id) {
+       const o = D.ordens.find(x => x.id === id); if (!o) return;
+       _tecConcluirOSId = id;
+       document.getElementById('m-tec-concluir').classList.add('open');
+       // Foco no campo de insumos gasto
+    }
+
+    function abrirFinalizarOS(id) {
+      const o = D.ordens.find(x => x.id === id); if (!o) return;
+      if (confirm('Deseja realmente finalizar esta Ordem de Serviço?')) {
+        mudarStatus(id, 'concluida');
+      }
+    }
+
     async function mudarStatus(osId, novoStatus) {
       if (novoStatus === 'concluida') {
         _tecConcluirOSId = osId;
