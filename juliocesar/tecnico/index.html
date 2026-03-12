@@ -903,24 +903,18 @@
 
     // ===== SUPABASE =====
     async function sbGet() {
-      const r = await fetch(SB_URL + '/rest/v1/dados?id=eq.principal&select=conteudo,atualizado_em', {
-        headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY }
-      });
-      const json = await r.json();
-      return json && json[0] ? json[0] : null;
+      const { data, error } = await sb.from('dados').select('conteudo, atualizado_em').eq('id', 'principal').single();
+      if (error) {
+        console.error('sbGet erro:', error);
+        return null;
+      }
+      return data;
     }
 
     async function sbSave(conteudo) {
       const ts = new Date().toISOString();
-      await fetch(SB_URL + '/rest/v1/dados', {
-        method: 'POST',
-        headers: {
-          'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY,
-          'Content-Type': 'application/json',
-          'Prefer': 'resolution=merge-duplicates,return=minimal'
-        },
-        body: JSON.stringify({ id: 'principal', conteudo, atualizado_em: ts })
-      });
+      const { error } = await sb.from('dados').upsert({ id: 'principal', conteudo: conteudo, atualizado_em: ts });
+      if (error) console.error('sbSave erro:', error);
     }
 
     // ===== TABS =====

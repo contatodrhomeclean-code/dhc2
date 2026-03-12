@@ -8943,34 +8943,21 @@ Qualquer dúvida, estamos à disposição!
 
     async function sbGet() {
       try {
-        const r = await fetch(`${SB_URL}/rest/v1/dados?id=eq.principal&select=conteudo`, {
-          headers: { 'apikey': getSBKey(), 'Authorization': 'Bearer ' + getSBKey() }
-        });
-        const rows = await r.json();
-        if (r.status === 401 || r.status === 403) {
-          console.warn('Supabase: chave inválida. Use a chave anon do projeto.');
-          mostrarSync('erro_key');
-          return null;
-        }
-        if (rows && rows[0] && rows[0].conteudo && Object.keys(rows[0].conteudo).length > 0) {
-          return rows[0].conteudo;
-        }
-      } catch (e) { console.warn('Supabase GET erro:', e); }
-      return null;
+        const { data, error } = await sb.from('dados').select('conteudo').eq('id', 'principal').single();
+        if (error) throw error;
+        return data ? data.conteudo : null;
+      } catch (e) {
+        console.warn('Supabase GET erro:', e);
+        mostrarSync('erro_key');
+        return null;
+      }
     }
 
     async function sbSet(dados) {
       try {
-        await fetch(`${SB_URL}/rest/v1/dados?id=eq.principal`, {
-          method: 'PATCH',
-          headers: {
-            'apikey': getSBKey(),
-            'Authorization': 'Bearer ' + getSBKey(),
-            'Content-Type': 'application/json',
-            'Prefer': 'return=minimal'
-          },
-          body: JSON.stringify({ conteudo: dados, atualizado_em: new Date().toISOString() })
-        });
+        const ts = new Date().toISOString();
+        const { error } = await sb.from('dados').upsert({ id: 'principal', conteudo: dados, atualizado_em: ts });
+        if (error) throw error;
       } catch (e) { console.warn('Supabase SET erro:', e); }
     }
 
@@ -9098,32 +9085,20 @@ Qualquer dúvida, estamos à disposição!
     // Salva SEMPRE na nuvem com upsert (cria ou atualiza)
     async function sbUpsert(dados) {
       try {
-        // Remove campos que não devem ir para nuvem para evitar payload enorme
         const payload = JSON.parse(JSON.stringify(dados));
         const ts = new Date().toISOString();
-        const r = await fetch(SB_URL + '/rest/v1/dados', {
-          method: 'POST',
-          headers: {
-            'apikey': getSBKey(),
-            'Authorization': 'Bearer ' + getSBKey(),
-            'Content-Type': 'application/json',
-            'Prefer': 'resolution=merge-duplicates,return=minimal'
-          },
-          body: JSON.stringify({ id: 'principal', conteudo: payload, atualizado_em: ts })
-        });
-        return r.ok || r.status === 200 || r.status === 201 || r.status === 204;
+        const { error } = await sb.from('dados').upsert({ id: 'principal', conteudo: payload, atualizado_em: ts });
+        if (error) throw error;
+        return true;
       } catch (e) { console.warn('sbUpsert erro:', e); return false; }
     }
 
     // Busca da nuvem
     async function sbGetComTs() {
       try {
-        const r = await fetch(SB_URL + '/rest/v1/dados?id=eq.principal&select=conteudo,atualizado_em', {
-          headers: { 'apikey': getSBKey(), 'Authorization': 'Bearer ' + getSBKey() }
-        });
-        if (!r.ok) return null;
-        const rows = await r.json();
-        return (rows && rows[0]) ? rows[0] : null;
+        const { data, error } = await sb.from('dados').select('conteudo, atualizado_em').eq('id', 'principal').single();
+        if (error) throw error;
+        return data;
       } catch (e) { return null; }
     }
 
@@ -9154,18 +9129,23 @@ Qualquer dúvida, estamos à disposição!
       });
     }
     let _salvando = false;
-    function salvarDados() {
+    let _filaSalvar = false;
+    async function salvarDados() {
       salvarLocal();
-      // Totalmente Automático: salvamento imediato e debounced para não sobrecarregar
-      clearTimeout(_saveTimer);
-      _saveTimer = setTimeout(async function () {
-        if (_salvando) return;
-        _salvando = true;
-        mostrarSync('salvando');
-        const ok = await sbUpsert(D);
-        mostrarSync(ok ? 'ok' : 'erro');
-        _salvando = false;
-      }, 500); // Reduzido para 500ms para resposta mais rápida
+      if (_salvando) {
+        _filaSalvar = true;
+        return;
+      }
+      _salvando = true;
+      mostrarSync('salvando');
+      const ok = await sbUpsert(D);
+      mostrarSync(ok ? 'ok' : 'erro');
+      _salvando = false;
+      
+      if (_filaSalvar) {
+        _filaSalvar = false;
+        salvarDados();
+      }
     }
 
     function travarBtn(btn, ms) {
