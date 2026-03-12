@@ -9005,54 +9005,14 @@ Qualquer dúvida, estamos à disposição!
       mostrarSync(ok ? 'ok' : 'erro');
     }
 
-    // Força download manual da nuvem
     async function forceSyncDown() {
       const st = document.getElementById('sync-manual-status');
       if (st) { st.style.display = 'block'; st.innerHTML = '<span style="color:#856404">⏳ Buscando dados...</span>'; }
       mostrarSync('carregando');
       const nuvem = await sbGetComTs();
       if (nuvem && nuvem.conteudo && nuvem.conteudo.clientes) {
-        const N = nuvem.conteudo;
-        // Mescla (não sobrescreve) para não perder dados locais criados offline
-        const mesclar = (local, remoto) => {
-          const map = {};
-          (local || []).forEach(x => { if (x && x.id != null) map[x.id] = x; });
-          (remoto || []).forEach(x => {
-            if (!x || x.id == null) return;
-            if (!map[x.id]) { map[x.id] = x; }
-            else {
-              const tl = map[x.id].em ? new Date(map[x.id].em).getTime() : 0;
-              const tr = x.em ? new Date(x.em).getTime() : 0;
-              if (tr >= tl) map[x.id] = x;
-            }
-          });
-          return Object.values(map);
-        };
-        D.clientes = mesclar(D.clientes, N.clientes);
-        D.propostas = mesclar(D.propostas, N.propostas);
-        D.ordens = mesclar(D.ordens, N.ordens);
-        D.despesas = mesclar(D.despesas, N.despesas);
-        D.receitas = mesclar(D.receitas, N.receitas);
-        D.catalogo = mesclar(D.catalogo, N.catalogo);
-        D.tecnicosObj = mesclar(D.tecnicosObj, N.tecnicosObj);
-        D.leads = mesclar(D.leads, N.leads);
-        D.interacoes = mesclar(D.interacoes, N.interacoes);
-        // IDs: sempre usa o maior
-        const Ni = N.ids || {}; const Li = D.ids || {};
-        D.ids = {
-          c: Math.max(Li.c || 1, Ni.c || 1), o: Math.max(Li.o || 1, Ni.o || 1),
-          p: Math.max(Li.p || 1, Ni.p || 1), r: Math.max(Li.r || 1, Ni.r || 1),
-          d: Math.max(Li.d || 1, Ni.d || 1), cat: Math.max(Li.cat || 1, Ni.cat || 1),
-          lead: Math.max(Li.lead || 1, Ni.lead || 1), inter: Math.max(Li.inter || 1, Ni.inter || 1),
-          tec: Math.max(Li.tec || 1, Ni.tec || 1),
-        };
-        if (N.cfg) D.cfg = N.cfg;
-        D.tecnicos = N.tecnicos || D.tecnicos;
-        D.categorias = N.categorias || D.categorias;
-        D._ts = new Date().toISOString();
-        // Sobe resultado do merge pra nuvem (garante que ambos dispositivos ficam iguais)
-        await sbUpsert(D);
-        try { renderHome(); renderNotificacoes(); renderProps(); renderOS(); renderCal(); } catch (e) { }
+        D = nuvem.conteudo;
+        try { renderHome(); renderNotificacoes(); renderProps(); renderOS(); renderCal(); renderClis(); renderFin(); } catch (e) { }
         const dt = nuvem.atualizado_em ? new Date(nuvem.atualizado_em).toLocaleString('pt-BR') : '?';
         if (st) { st.style.display = 'block'; st.innerHTML = '<span style="color:var(--green)">✅ Dados sincronizados! Atualizado em: ' + dt + '</span>'; }
         mostrarSync('ok');
@@ -9088,9 +9048,16 @@ Qualquer dúvida, estamos à disposição!
         const payload = JSON.parse(JSON.stringify(dados));
         const ts = new Date().toISOString();
         const { error } = await sb.from('dados').upsert({ id: 'principal', conteudo: payload, atualizado_em: ts });
-        if (error) throw error;
+        if (error) {
+          alert('❌ ERRO CRÍTICO: Falha ao salvar na Nuvem.\nVerifique sua conexão ou contate o suporte.\nErro: ' + error.message);
+          throw error;
+        }
         return true;
-      } catch (e) { console.warn('sbUpsert erro:', e); return false; }
+      } catch (e) { 
+        console.warn('sbUpsert erro:', e); 
+        alert('❌ ERRO: O dado NÃO foi salvo na nuvem VG2H. Não feche o aplicativo!');
+        return false; 
+      }
     }
 
     // Busca da nuvem
@@ -9161,72 +9128,25 @@ Qualquer dúvida, estamos à disposição!
       }, ms || 3000);
     }
 
-    function aplicarNuvem(N) {
-      if (!N || !N.clientes) return; // PROIBIR limpeza por dado vazio
-      // Se nuvem foi resetada mais recentemente que local, substitui tudo diretamente
-      if (N._resetAt && (!D._resetAt || N._resetAt > D._resetAt)) {
-        D.clientes = N.clientes || []; D.ordens = N.ordens || []; D.propostas = N.propostas || [];
-        D.despesas = N.despesas || []; D.receitas = N.receitas || []; D.catalogo = N.catalogo || [];
-        D.tecnicos = N.tecnicos || []; D.tecnicosObj = N.tecnicosObj || [];
-        D.leads = N.leads || []; D.interacoes = N.interacoes || [];
-        D.ids = N.ids || { c: 1, o: 1, p: 1, r: 1, d: 1, cat: 1, lead: 1, inter: 1, tec: 1 };
-        D._resetAt = N._resetAt;
-        if (N.cfg) D.cfg = N.cfg;
-        return;
-      }
-      // Quem tem 'em' (timestamp) mais recente ganha
-      // Se só existe num lado, mantém
-      const unir = (local, remoto) => {
-        const map = {};
-        // 1. Coloca tudo da nuvem
-        (remoto || []).forEach(x => { if (x && x.id != null) map[x.id] = x; });
-        // 2. Local: só vence se 'em' for MAIS RECENTE que o da nuvem
-        (local || []).forEach(x => {
-          if (!x || x.id == null) return;
-          if (!map[x.id]) {
-            map[x.id] = x; // não existe na nuvem — adiciona
-          } else {
-            const tNuvem = map[x.id].em || '';
-            const tLocal = x.em || '';
-            if (tLocal > tNuvem) map[x.id] = x; // local é mais novo — local ganha
-            // senão nuvem ganha (já está no map)
-          }
-        });
-        return Object.values(map);
-      };
-      D.propostas = unir(D.propostas, N.propostas);
-      D.ordens = unir(D.ordens, N.ordens);
-      D.clientes = unir(D.clientes, N.clientes);
-      D.despesas = unir(D.despesas, N.despesas);
-      D.receitas = unir(D.receitas, N.receitas);
-      D.catalogo = unir(D.catalogo, N.catalogo);
-      if (N.tecnicosObj) D.tecnicosObj = unir(D.tecnicosObj, N.tecnicosObj);
-      if (N.leads) D.leads = unir(D.leads, N.leads);
-      if (N.interacoes) D.interacoes = unir(D.interacoes, N.interacoes);
-      const Ni = N.ids || {}; const Li = D.ids || {};
-      D.ids = { c: Math.max(Li.c || 1, Ni.c || 1), o: Math.max(Li.o || 1, Ni.o || 1), p: Math.max(Li.p || 1, Ni.p || 1), r: Math.max(Li.r || 1, Ni.r || 1), d: Math.max(Li.d || 1, Ni.d || 1), cat: Math.max(Li.cat || 1, Ni.cat || 1), lead: Math.max(Li.lead || 1, Ni.lead || 1), inter: Math.max(Li.inter || 1, Ni.inter || 1), tec: Math.max(Li.tec || 1, Ni.tec || 1) };
-      if (N.cfg) D.cfg = N.cfg;
-      if (N.tecnicos) D.tecnicos = N.tecnicos;
-      if (N.categorias) D.categorias = N.categorias;
-    }
-
+    // Função aplicarNuvem removida do código. O carregamento é 100% via Nuvem.
     (async function iniciar() {
-      // Baixa nuvem e aplica (nuvem é fonte da verdade)
+      // Baixa nuvem e SOBRESCREVE tudo (nuvem é 100% a única fonte da verdade)
       mostrarSync('carregando');
       try {
         const nuvem = await sbGetComTs();
         if (nuvem && nuvem.conteudo && nuvem.conteudo.clientes) {
-          aplicarNuvem(nuvem.conteudo);
-          try { renderHome(); renderNotificacoes(); renderProps(); renderOS(); } catch (e) { }
+          // Atribuição EXCLUSIVA E DIRETA da Nuvem para a Memória (Destrói estado fantasma)
+          D = nuvem.conteudo;
+          try { renderHome(); renderNotificacoes(); renderProps(); renderOS(); renderCal(); renderFin(); renderClis(); } catch (e) { }
           mostrarSync('ok');
         } else if (!nuvem) {
-          await sbUpsert(D);
-          mostrarSync('ok');
+          mostrarSync('erro');
+          alert('Sem conexão com o banco Supabase ou banco vazio.');
         } else {
           await sbUpsert(D);
           mostrarSync('ok');
         }
-      } catch (e) { mostrarSync('erro'); }
+      } catch (e) { mostrarSync('erro'); alert('Erro crítico ao baixar dados da Nuvem.'); }
 
       // Supabase Auth auto-persistence will handle the session
       const { data: { session } } = await sb.auth.getSession();
@@ -9248,7 +9168,7 @@ Qualquer dúvida, estamos à disposição!
           if (!nuvem || !nuvem.conteudo) return;
           if (nuvem.atualizado_em === _tsUltimoSync) return;
           _tsUltimoSync = nuvem.atualizado_em;
-          aplicarNuvem(nuvem.conteudo);
+          D = nuvem.conteudo; // OVERRIDE ESTRITO
           salvarLocal();
           try { renderHome(); renderProps(); renderOS(); renderCal(); renderFin(); renderClis(); } catch (e) { }
           mostrarSync('ok');
@@ -9264,7 +9184,7 @@ Qualquer dúvida, estamos à disposição!
               const N = payload.new.conteudo;
               if (payload.new.atualizado_em === _tsUltimoSync) return;
               _tsUltimoSync = payload.new.atualizado_em;
-              aplicarNuvem(N);
+              D = N; // OVERRIDE ESTRITO
               salvarLocal();
               try { renderHome(); renderProps(); renderOS(); renderCal(); renderFin(); renderClis(); } catch (e) { }
               mostrarSync('ok');

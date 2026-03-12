@@ -914,7 +914,10 @@
     async function sbSave(conteudo) {
       const ts = new Date().toISOString();
       const { error } = await sb.from('dados').upsert({ id: 'principal', conteudo: conteudo, atualizado_em: ts });
-      if (error) console.error('sbSave erro:', error);
+      if (error) {
+        console.error('sbSave erro:', error);
+        alert('❌ ERRO CRÍTICO: Falha ao salvar a OS no Supabase VG2H. Verifique sua conexão!');
+      }
     }
 
     // ===== TABS =====
@@ -1453,8 +1456,11 @@
 
         // Reconecta usando os dados da nuvem se houver sessão
         const nuvem = await sbGet();
-        if (!nuvem || !nuvem.conteudo) return;
-        D = nuvem.conteudo;
+        if (!nuvem || !nuvem.conteudo) {
+          alert('Erro de Conexão com Supabase.');
+          return;
+        }
+        D = nuvem.conteudo; // Nuvem = Única Verdade
         const email = session.user.email;
         const tec = (D.tecnicosObj || []).find(t => t.email && t.email.toLowerCase() === email.toLowerCase());
         if (tec && tec.ativo) {
