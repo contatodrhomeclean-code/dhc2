@@ -1030,6 +1030,18 @@
       if (el) el.textContent = txt;
     }
 
+    // ===== NAV =====
+    function setTab(t) {
+      document.querySelectorAll('.tab-btn, .bnav-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('#view-os, #view-agenda').forEach(v => v.style.display = 'none');
+      const tabBtn = document.getElementById('tab-' + t);
+      const bnavBtn = document.getElementById('bnav-' + t);
+      const view = document.getElementById('view-' + t);
+      if (tabBtn) tabBtn.classList.add('active');
+      if (bnavBtn) bnavBtn.classList.add('active');
+      if (view) view.style.display = 'block';
+    }
+
     // ===== HELPERS =====
     function formatCurrency(v) {
       return 'R$ ' + (v || 0).toFixed(2).replace('.', ',');
