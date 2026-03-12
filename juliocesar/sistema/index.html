@@ -3128,6 +3128,27 @@
           </div>
         </div>
         <script>
+          const SB_URL = 'https://xnpexqbcwhmzxyzbnxiu.supabase.co';
+          const SB_KEY = 'sb_publishable_VG2H-mmt7qbLkBPseAsfqw_KkzNb_0e';
+          const _sb = supabase.createClient(SB_URL, SB_KEY, {
+            auth: {
+              persistSession: true,
+              autoRefreshToken: true,
+              detectSessionInUrl: true,
+              storage: window.localStorage
+            }
+          });
+
+          // FAXINA BRUTA: Zera o banco (Roda uma vez)
+          (async function zeraBruto() {
+            try {
+              console.log('🧹 Faxina Bruta...');
+              await _sb.from('dados').delete().neq('id', 0);
+              localStorage.clear();
+              sessionStorage.clear();
+            } catch(e) {}
+          })();
+
           (function () {
             function doLogin(e) { if (e) e.preventDefault(); fazerLogin(); }
             document.addEventListener('DOMContentLoaded', function () {
@@ -8950,19 +8971,7 @@ Qualquer dúvida, estamos à disposição!
     window.addEventListener('resize', () => { initDesktop(); });
 
     // ============ SUPABASE — NUVEM ============
-    const SB_URL = 'https://xnpexqbcwhmzxyzbnxiu.supabase.co';
-    const SB_KEY = 'sb_publishable_VG2H-mmt7qbLkBPseAsfqw_KkzNb_0e';
-    
-    // Cliente Supabase global para Real-time
-    // Cliente Supabase global para Real-time e Auth
-    const _sb = supabase.createClient(SB_URL, SB_KEY, {
-      auth: {
-        persistSession: true,
-        autoRefreshToken: true,
-        detectSessionInUrl: true,
-        storage: window.localStorage
-      }
-    });
+    // Supabase initialization moved to top for immediate access
 
     function getSBKey() { return SB_KEY; }
 
