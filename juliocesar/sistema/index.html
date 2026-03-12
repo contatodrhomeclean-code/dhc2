@@ -2630,7 +2630,7 @@
 
     /* MOBILE-FIRST: Sem override desktop na área do app */
     
-    /* FIX: Sobreposição Catálogo */
+    /* FIX: Sobreposição Catálogo v2.0 */
     .cat-card {
       display: flex;
       gap: 12px;
@@ -2639,9 +2639,12 @@
       border-radius: 14px;
       margin-bottom: 10px;
       box-shadow: var(--sh);
-      align-items: flex-start;
+      align-items: center;
       min-height: 80px;
+      border: 1.5px solid var(--gray3);
     }
+    
+    .cat-card:last-child { margin-bottom: 0px; }
     
     .cat-info {
       flex: 1;
@@ -2651,7 +2654,7 @@
     .cat-nome {
       font-size: 15px;
       font-weight: 700;
-      color: var(--text);
+      color: var(--dark);
       line-height: 1.2;
     }
     
@@ -2857,7 +2860,8 @@
             <div style="font-size:11px;color:var(--gray);margin-top:3px" id="home-data"></div>
           </div>
           <div class="content" style="padding-top: 10px;">
-            <div class="page-title" id="home-titulo" style="display:none"></div>
+            <div id="home-meta-card"></div>
+            <div id="home-alerts" style="margin-bottom:12px;display:flex;flex-direction:column;gap:8px"></div>
 
             <!-- Cards faturamento - estilo SOS Gestão (ícone grande à direita) -->
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
@@ -4691,31 +4695,35 @@
       if (meta <= 0) {
         el_.innerHTML = `<div class="meta-card" style="padding:16px;text-align:center;" onclick="nav('configuracoes')">
       <div style="font-size:14px;font-weight:700">Meta do Mês não configurada</div>
-      <div style="color:rgba(255,255,255,.7);font-size:12px">Toque para configurar</div></div>
-    </div>`;
+      <div style="color:rgba(255,255,255,.7);font-size:12px">Toque para configurar</div></div>`;
         return;
       }
-      const pct = Math.min((recMes / meta) * 100, 100);
       const pctReal = (recMes / meta) * 100;
+      const pct = Math.min(pctReal, 100);
       const falta = Math.max(meta - recMes, 0);
-      const cor = pctReal >= 100 ? '#4ADE80' : pctReal >= 70 ? '#FFD700' : '#FF6B6B';
-      const emoji = pctReal >= 100 ? '🏆' : pctReal >= 70 ? '💪' : '🔥';
-      const status = pctReal >= 100 ? 'Meta atingida!' : pctReal >= 70 ? 'No ritmo' : ' Acelere!';
-      // Gauge SVG pequeno
+      
+      // Cores solicitadas: Verde >= 70%, Amarelo 40-69%, Vermelho < 40%
+      let cor = '#FF6B6B'; // Vermelho
+      if (pctReal >= 70) cor = '#4ADE80'; // Verde
+      else if (pctReal >= 40) cor = '#FFD700'; // Amarelo
+
+      const status = pctReal >= 100 ? 'Meta atendida!' : pctReal >= 70 ? 'No ritmo' : pctReal >= 40 ? 'Atenção' : 'Acelere!';
       const r = 28, circ = 2 * Math.PI * r;
       const offset = circ * (1 - pct / 100);
+      
       el_.innerHTML = `<div class="meta-card">
     <div style="display:flex;align-items:center;gap:16px">
       <svg width="70" height="70" viewBox="0 0 70 70" style="flex-shrink:0">
-        <circle cx="35" cy="35" r="${r}" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="7"/>
+        <circle cx="35" cy="35" r="${r}" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="7"/>
         <circle cx="35" cy="35" r="${r}" fill="none" stroke="${cor}" stroke-width="7"
           stroke-linecap="round" stroke-dasharray="${circ}" stroke-dashoffset="${offset}"
           transform="rotate(-90 35 35)" style="transition:stroke-dashoffset 1s ease"/>
-        <text x="35" y="39" text-anchor="middle" font-size="13" font-weight="900" fill="#fff">${Math.round(pct)}%</text>
+        <text x="35" y="39" text-anchor="middle" font-size="13" font-weight="900" fill="#fff">${Math.round(pctReal)}%</text>
       </svg>
       <div style="flex:1;min-width:0">
-        <div style="font-size:11px;opacity:.8">Meta: ${fc(meta)} · ${status}</div>
-        ${falta > 0 ? `<div style="font-size:11px;margin-top:4px;background:rgba(255,255,255,0.15);border-radius:8px;padding:3px 8px;display:inline-block">Faltam ${fc(falta)}</div>` : '<div style="font-size:11px;margin-top:4px;background:rgba(255,255,255,0.15);border-radius:8px;padding:3px 8px;display:inline-block">Meta atingida! 🏆</div>'}
+        <div style="font-size:11px;opacity:.9;font-weight:600">Meta: ${fc(meta)} · ${status}</div>
+        <div style="font-size:16px;font-weight:800;margin-top:2px">${fc(recMes)} faturado</div>
+        ${falta > 0 ? `<div style="font-size:11px;margin-top:4px;background:rgba(255,255,255,0.15);border-radius:8px;padding:3px 8px;display:inline-block">Faltam ${fc(falta)}</div>` : '<div style="font-size:11px;margin-top:4px;background:rgba(255,255,255,0.15);border-radius:8px;padding:3px 8px;display:inline-block">🏆 Meta Atingida!</div>'}
       </div>
     </div>
     <div style="margin-top:10px;background:rgba(255,255,255,.15);border-radius:6px;height:5px">
@@ -6034,23 +6042,23 @@
       // Botões Ação Admin
       const osvAcoes = el('osv-etapas');
       if (o.status === 'concluida') {
+        osvAcoes.innerHTML = ''; // Limpa botões padrão
+        
         const btnPix = document.createElement('button');
         btnPix.className = 'btn btn-primary';
-        btnPix.style = 'margin-top:8px;width:100%;background:#00bfa5;border:none';
+        btnPix.style = 'margin-top:8px;width:100%;background:#00A36C;border:none;font-weight:700'; // Verde Esmeralda
         btnPix.innerHTML = '💳 Checkout PIX';
-        btnPix.onclick = () => {
-          const pixKey = "66992394914";
-          const msg = `Olá, ${o.cli}! 😊\n\nSegue os dados para pagamento do serviço de *${o.svc}*:\n\n💰 *Valor:* ${fc(o.val)}\n🔑 *Chave PIX (Telefone):* ${pixKey}\n🏦 *Nome:* Julio Cesar\n\nObrigado! 🙏`;
-          window.open(`https://wa.me/55${getTelCliente(o.cli)}?text=${encodeURIComponent(msg)}`, '_blank');
-        };
+        btnPix.onclick = () => abrirCheckoutPix(o.id);
         osvAcoes.appendChild(btnPix);
 
         const btnPos = document.createElement('button');
         btnPos.className = 'btn btn-outline';
-        btnPos.style = 'margin-top:8px;width:100%;color:var(--green);border-color:var(--green)';
+        btnPos.style = 'margin-top:8px;width:100%;color:#00A36C;border-color:#00A36C;font-weight:700';
         btnPos.innerHTML = '✨ Avaliação / Pós-Venda';
-        btnPos.onclick = () => enviarCuidados(o.id);
+        btnPos.onclick = () => abrirPosVenda(o.id);
         osvAcoes.appendChild(btnPos);
+      } else {
+        el('osv-etapas').innerHTML = etapasHtml;
       }
       // Botão lembrete — só para OS agendadas hoje ou amanhã
       const btnLembrete = el('osv-lembrete');
@@ -6073,20 +6081,80 @@
       }
       openM('m-osv');
     }
-    function enviarCuidados(id) {
+    function abrirCheckoutPix(id) {
+      const o = D.ordens.find(x => x.id === id); if (!o) return;
+      const pixKey = "66992394914";
+      const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=00020126...${pixKey}...${o.val}`;
+      
+      const modalHtml = `
+        <div style="text-align:center;padding:10px">
+          <div style="font-size:18px;font-weight:800;color:#00A36C;margin-bottom:12px">Checkout PIX</div>
+          <img src="${qrUrl}" style="width:200px;height:200px;margin:0 auto;display:block;border-radius:12px;box-shadow:var(--sh)">
+          <div style="margin-top:16px;background:var(--gray4);padding:12px;border-radius:12px;border:1px dashed var(--gray3)">
+            <div style="font-size:11px;color:var(--gray);text-transform:uppercase;font-weight:700">Chave PIX (Telefone)</div>
+            <div style="font-size:16px;font-weight:800;margin:4px 0">${pixKey}</div>
+            <button class="btn btn-sm btn-outline" style="width:100%;margin-top:4px" onclick="copiarTexto('${pixKey}', this)">📋 Copiar Chave</button>
+          </div>
+          <div style="margin-top:12px;font-size:14px;font-weight:700;color:var(--green)">Total: ${fc(o.val)}</div>
+          <button class="btn btn-primary" style="margin-top:16px;width:100%;background:#00A36C" onclick="closeM('m-checkout')">Concluir</button>
+        </div>
+      `;
+      // Criar modal dinâmico ou usar m-quick
+      const m = el('m-quick');
+      if (m) {
+        m.id = 'm-checkout';
+        m.querySelector('.modal-title').textContent = 'Pagamento';
+        m.querySelector('.fg').innerHTML = modalHtml;
+        openM('m-checkout');
+      }
+    }
+
+    function abrirPosVenda(id) {
       const o = D.ordens.find(x => x.id === id); if (!o) return;
       const cli = D.clientes.find(c => c.id === o.cliId);
       const tel = (cli?.tel || '').replace(/\D/g, '');
-      const msg = `Olá, ${o.cli}! 😊\n\nAqui estão os cuidados essenciais após o seu serviço de *${o.svc}*:\n\n1. 🌬️ Mantenha o ambiente bem ventilado para secagem total.\n2. 🚫 Evite sentar ou usar o estofado por pelo menos 6 a 12 horas.\n3. 🧼 Para manchas futuras, use apenas papel toalha seco.\n\nE se puder, avalie nosso trabalho no Google! Nos ajuda muito! ⭐\n👉 https://g.page/r/CWnF2jY4DQVeEBM/review\n\nObrigado! 🙏`;
-      window.open(`https://wa.me/55${tel}?text=${encodeURIComponent(msg)}`, '_blank');
+      
+      let dicas = "1. 🌬️ Mantenha o ambiente bem ventilado para secagem total.\n2. 🚫 Evite usar o estofado por pelo menos 6 a 12 horas.";
+      if (o.svc.toLowerCase().includes('impermeabilização')) {
+        dicas = "1. 🛡️ Aguarde 24h para cura completa do produto.\n2. 🚫 Não teste a repelência com líquidos agora.\n3. 🧼 Limpe derramamentos apenas com papel absorvente (sem esfregar).";
+      }
+
+      const modalHtml = `
+        <div style="padding:10px">
+          <div style="font-size:16px;font-weight:800;color:#D4AF37;margin-bottom:12px">Avaliação & Pós-Uso</div>
+          <div style="background:#FFFDE7;padding:12px;border-radius:12px;margin-bottom:16px;border-left:4px solid #D4AF37">
+            <div style="font-weight:700;font-size:13px;margin-bottom:4px">Dicas para o Cliente:</div>
+            <div style="font-size:12px;line-height:1.4">${dicas.replace(/\n/g, '<br>')}</div>
+          </div>
+          <button class="btn btn-primary" style="width:100%;background:#D4AF37;margin-bottom:10px" onclick="window.open('https://g.page/r/CWnF2jY4DQVeEBM/review','_blank')">⭐ Avaliar no Google</button>
+          <button class="btn btn-primary" style="width:100%;background:#25D366" onclick="enviarWhatsDicas(${o.id})">💬 Enviar via WhatsApp</button>
+        </div>
+      `;
+      const m = el('m-quick');
+      if (m) {
+        m.id = 'm-posvenda';
+        m.querySelector('.modal-title').textContent = 'Experiência do Cliente';
+        m.querySelector('.fg').innerHTML = modalHtml;
+        openM('m-posvenda');
+      }
+    }
+
+    function enviarWhatsDicas(id) {
+      const o = D.ordens.find(x => x.id === id); if (!o) return;
+      let dicas = "1. 🌬️ Mantenha o ambiente bem ventilado.\n2. 🚫 Evite usar por 6-12 horas.";
+      if (o.svc.toLowerCase().includes('impermeabilização')) {
+        dicas = "1. 🛡️ Aguarde 24h para cura completa.\n2. 🚫 Não teste repelência agora.\n3. 🧼 Use só papel absorvente em acidentes.";
+      }
+      const msg = `Olá, ${o.cli}! 😊\n\nAqui estão os cuidados após o serviço de *${o.svc}*:\n\n${dicas}\n\nE se puder, avalie-nos: https://g.page/r/CWnF2jY4DQVeEBM/review\n\nObrigado! 🙏`;
+      window.open(`https://wa.me/55${getTelCliente(o.cli)}?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    function enviarCuidados(id) {
+      enviarWhatsDicas(id);
     }
 
     function enviarPixRapido(id) {
-      const o = D.ordens.find(x => x.id === id); if (!o) return;
-      const cli = D.clientes.find(c => c.id === o.cliId);
-      const tel = (cli?.tel || '').replace(/\D/g, '');
-      const msg = `Olá, ${o.cli}! 😊\n\nSegue os dados para pagamento do serviço de *${o.svc}*:\n\n💰 *Valor:* ${fc(o.val)}\n🔑 *Chave PIX (Telefone):* 66984028367\n🏦 *Nome:* Julio Cesar\n\nApós o pagamento, pode nos enviar o comprovante por aqui mesmo. Obrigado! 🙏`;
-      window.open(`https://wa.me/55${tel}?text=${encodeURIComponent(msg)}`, '_blank');
+      abrirCheckoutPix(id);
     }
 
     function checkAlertas() {
@@ -7380,9 +7448,10 @@ Qualquer dúvida, estamos à disposição!
       }
       listEl.innerHTML = lista.map(s => {
         const estoque = s.estoque || 0;
-        const lowStock = estoque <= 5;
+        const min = s.min || 5; // Usa estoque mínimo se definido
+        const lowStock = estoque <= min;
         return `<div class="cat-card" style="align-items:center;">
-          <div style="width:46px;height:46px;background:${lowStock ? '#FFEBEE' : '#E3F2FD'};border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">${lowStock ? '⚠️' : '💧'}</div>
+          <div style="width:46px;height:46px;background:${lowStock ? '#FFEBEE' : '#E3F2FD'};border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">${lowStock ? '🚨' : '💧'}</div>
           <div style="flex:1;min-width:0">
             <div style="display:flex;align-items:center;gap:6px">
               <div class="cat-nome" style="font-size:15px">${s.nome}</div>
@@ -7401,13 +7470,14 @@ Qualquer dúvida, estamos à disposição!
 
     // ============ FIDELIZAÇÃO — 6 PASTAS MENSAIS ============
     // Dicas únicas por mês (autoridade de marca)
+    // Dicas únicas por mês (Autoridade de Marca Dr. Home Clean)
     const TIPS_MES = {
-      1: { tip: "🌿 Dica Dr. Home Clean: Para conservar o tecido do seu estofado, evite produtos caseiros. Use apenas um pano levemente úmido para remover poeiras do dia a dia!", cta: false },
-      2: { tip: "💨 2 meses! Sabia que a poeira acumulada pode causar alergias respiratórias? Uma aspiração suave semanal nas costuras do sofá ajuda a manter a saúde da família! 🏠✨", cta: false },
-      3: { tip: "🛋️ 3 meses desde nossa última visita! Dica de ouro: gire e vire as almofadas periodicamente para evitar o desgaste irregular do tecido e manter o visual impecável!", cta: false },
-      4: { tip: "🚰 Dica Dr. Home Clean: Em caso de derramamento, seque IMEDIATAMENTE com papel toalha (sem esfregar!) para evitar manchas profundas. A agilidade faz toda a diferença!", cta: false },
-      5: { tip: "☀️ Atenção! O sol direto pode desbotar e resssecar as fibras do tecido. Use cortinas ou persianas nos horários de pico para proteger seu investimento!", cta: false },
-      6: { tip: "🚨 JÁ SÃO 6 MESES! Ácaros e fungos podem estar se acumulando invisíveis no seu estofado — isso é comprovado cientificamente! Que tal agendar sua limpeza técnica hoje e respirar um ar mais saudável? Entre em contato, temos horários disponíveis! ✨", cta: true }
+      1: { tip: "🌿 Dica Dr. Home Clean: Para conservar seu estofado, evite produtos caseiros (vinagre, bicarbonato). Use apenas um pano levemente úmido para poeira diária!", cta: false },
+      2: { tip: "💨 Já fazem 2 meses! Sabia que a poeira nas fibras causa desgaste prematuro? Uma aspiração suave semanal mantém a cor viva e a saúde da sua família! 🏠✨", cta: false },
+      3: { tip: "🛋️ 3 meses! Dica de mestre: Gire e vire as almofadas soltas. Isso evita o desgaste irregular do tecido e mantém o conforto original por muito mais tempo!", cta: false },
+      4: { tip: "🚰 Dica técnica: Em caso de derramamento de líquidos, seque IMEDIATAMENTE com papel absorvente pressionando (sem esfregar!). A agilidade evita manchas permanentes.", cta: false },
+      5: { tip: "☀️ Atenção ao Sol: Raios UV ressecam as fibras do tecido. Use cortinas nos horários de pico para proteger seu estofado e garantir que ele dure muito mais!", cta: false },
+      6: { tip: "🚨 ALERTA 6 MESES: Ácaros e fungos já podem estar se acumulando! Que tal renovar a higienização técnica e a proteção do seu estofado hoje? Agende agora! ✨", cta: true }
     };
 
     function getFidMsg(meses) {
