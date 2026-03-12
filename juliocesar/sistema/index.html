@@ -3157,9 +3157,6 @@
         <!-- ===== HOME ===== -->
         <div id="pg-home" class="page active">
           <div class="hdr">
-            <div class="hdr-logo">
-              Dr.<span>HOME</span> CLEAN
-            </div>
             <div style="display:flex;flex-direction:column;line-height:1.15">
                 <div style="display:flex;align-items:center;gap:0px">
                   <span
@@ -4938,6 +4935,7 @@
       const nb = NAV_PAGES[p];
       if (nb) document.getElementById(nb)?.classList.add('active');
       window.scrollTo(0, 0);
+      localStorage.setItem('activeTab', p);
       // Salva página atual para restaurar após reload
       try {
         if (p === 'home') renderHome();
@@ -8797,16 +8795,23 @@ Qualquer dúvida, estamos à disposição!
         // DEBUG: console.log('Login attempt:', valE, valS);
 
         if (valE === 'contatodrhomeclean@gmail.com' && valS === 'JulioCritter*94') {
-          logarSucesso(valE);
+          _sb.auth.signInWithPassword({ email: valE, password: valS }).then(({ data, error }) => {
+            if (error) alert('Erro Supabase: ' + error.message);
+            else logarSucesso(valE);
+          });
           return;
         }
 
         if ((valE === 'contatodrhomeclean@gmail.com' || valE === 'admin') && valS === 'drhome123') {
-          authSave('contatodrhomeclean@gmail.com'); authSenha(valS);
-          var pg = document.getElementById('pg-login');
-          if (pg) { pg.style.display = 'none'; pg.style.visibility = 'hidden'; }
-          try { renderHome(); } catch (e) { }
-          nav('home');
+           const email = (valE === 'admin') ? 'contatodrhomeclean@gmail.com' : valE;
+           _sb.auth.signInWithPassword({ email: email, password: valS }).then(({ data, error }) => {
+              if (error) {
+                // Se falhar no Supabase mas for o master fixo, loga local
+                logarSucesso(email);
+              } else {
+                logarSucesso(email);
+              }
+           });
         } else {
           var tecs = (typeof D !== 'undefined' && D.tecnicosObj) ? D.tecnicosObj : [];
           var tecEncontrado = tecs.find(function (t) { 
@@ -9272,14 +9277,13 @@ Qualquer dúvida, estamos à disposição!
       // Supabase Auth auto-persistence will handle the session
       const { data: { session } } = await _sb.auth.getSession();
       if (session) {
-        // Find technician by email if logged in as technician or just stay as admin
-        // For this system, we mainly use the hardcoded admin login or tecnicoObj
+        logarSucesso(session.user.email);
       }
 
       // Restaura última página
       try {
-        const lastPg = null; // Ignora última página (Força Início)
-        if (lastPg && lastPg !== 'home') { setTimeout(() => { try { nav(lastPg); } catch (e) { } }, 100); }
+        const lastPg = localStorage.getItem('activeTab') || 'home';
+        if (lastPg && lastPg !== 'home') { setTimeout(() => { try { nav(lastPg); } catch (e) { } }, 150); }
       } catch (e) { }
 
       // Polling de fallback (mantido por segurança, mas com tempo maior)
