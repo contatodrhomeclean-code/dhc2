@@ -870,7 +870,7 @@
   <script>
     const SB_URL = 'https://xnpexqbcwhmzxyzbnxiu.supabase.co';
     const SB_KEY = 'sb_publishable_VG2H-mmt7qbLkBPseAsfqw_KkzNb_0e';
-    const _sb = supabase.createClient(SB_URL, SB_KEY, {
+    const sb = supabase.createClient(SB_URL, SB_KEY, {
       auth: {
         persistSession: true,
         autoRefreshToken: true,
@@ -981,7 +981,7 @@
       clearInterval(_polling);
       _tecLogado = null;
       D = null;
-      _sb.auth.signOut();
+      sb.auth.signOut();
       document.getElementById('app').style.display = 'none';
       document.getElementById('pg-login').style.display = 'flex';
       document.getElementById('inp-email').value = '';
@@ -1442,7 +1442,7 @@
       try {
         setSyncBar('Reconectando...');
 
-        const { data: { session } } = await _sb.auth.getSession();
+        const { data: { session } } = await sb.auth.getSession();
         if (!session) return;
 
         // Reconecta usando os dados da nuvem se houver sessão
@@ -1456,7 +1456,7 @@
           abrirApp();
 
           // Real-time Sync
-          _sb.channel('tec_sync')
+          sb.channel('tec_sync')
             .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'dados', filter: 'id=eq.principal' }, payload => {
               if (payload.new && payload.new.conteudo) {
                 console.log('🔄 Sincronização Técnico ativada!');

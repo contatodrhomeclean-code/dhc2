@@ -613,7 +613,14 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
     rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SB_URL = 'https://xnpexqbcwhmzxyzbnxiu.supabase.co';
+    const SB_KEY = 'sb_publishable_VG2H-mmt7qbLkBPseAsfqw_KkzNb_0e';
+    const sb = supabase.createClient(SB_URL, SB_KEY, {
+      auth: { persistSession: true, autoRefreshToken: true, storage: window.localStorage }
+    });
+  </script>
   <style>
     * {
       box-sizing: border-box;
@@ -3128,17 +3135,6 @@
           </div>
         </div>
         <script>
-          const SB_URL = 'https://xnpexqbcwhmzxyzbnxiu.supabase.co';
-          const SB_KEY = 'sb_publishable_VG2H-mmt7qbLkBPseAsfqw_KkzNb_0e';
-          const _sb = supabase.createClient(SB_URL, SB_KEY, {
-            auth: {
-              persistSession: true,
-              autoRefreshToken: true,
-              detectSessionInUrl: true,
-              storage: window.localStorage
-            }
-          });
-
           // FAXINA CONCLUÍDA - Banco Zerado
 
           (function () {
@@ -8742,7 +8738,7 @@ Qualquer dúvida, estamos à disposição!
       return null;
     }
     function authClear() {
-      _sb.auth.signOut();
+      sb.auth.signOut();
       try { document.cookie = 'dhc_auth=;max-age=0;path=/'; } catch (e) { }
     }
 
@@ -8807,7 +8803,7 @@ Qualquer dúvida, estamos à disposição!
         // DEBUG: console.log('Login attempt:', valE, valS);
 
         if (valE === 'contatodrhomeclean@gmail.com' && valS === 'JulioCritter*94') {
-          _sb.auth.signInWithPassword({ email: valE, password: valS }).then(({ data, error }) => {
+          sb.auth.signInWithPassword({ email: valE, password: valS }).then(({ data, error }) => {
             if (error) alert('Erro Supabase: ' + error.message);
             else logarSucesso(valE);
           });
@@ -8816,7 +8812,7 @@ Qualquer dúvida, estamos à disposição!
 
         if ((valE === 'contatodrhomeclean@gmail.com' || valE === 'admin') && valS === 'drhome123') {
            const email = (valE === 'admin') ? 'contatodrhomeclean@gmail.com' : valE;
-           _sb.auth.signInWithPassword({ email: email, password: valS }).then(({ data, error }) => {
+           sb.auth.signInWithPassword({ email: email, password: valS }).then(({ data, error }) => {
               if (error) {
                 // Se falhar no Supabase mas for o master fixo, loga local
                 logarSucesso(email);
@@ -9274,7 +9270,7 @@ Qualquer dúvida, estamos à disposição!
       } catch (e) { mostrarSync('erro'); }
 
       // Supabase Auth auto-persistence will handle the session
-      const { data: { session } } = await _sb.auth.getSession();
+      const { data: { session } } = await sb.auth.getSession();
       if (session) {
         logarSucesso(session.user.email);
       }
@@ -9302,7 +9298,7 @@ Qualquer dúvida, estamos à disposição!
 
       // ============ REAL-TIME SYNC (SUPABASE CHANNELS) ============
       try {
-        _sb.channel('dados_changes')
+        sb.channel('dados_changes')
           .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'dados', filter: 'id=eq.principal' }, payload => {
             console.log('🔄 Sincronização em tempo real recebida!');
             if (payload.new && payload.new.conteudo) {

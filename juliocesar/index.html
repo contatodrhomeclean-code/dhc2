@@ -1992,7 +1992,7 @@
   <script>
     const SB_URL = 'https://xnpexqbcwhmzxyzbnxiu.supabase.co';
     const SB_KEY = 'sb_publishable_VG2H-mmt7qbLkBPseAsfqw_KkzNb_0e';
-    const _sb = supabase.createClient(SB_URL, SB_KEY, {
+    const sb = supabase.createClient(SB_URL, SB_KEY, {
         auth: { persistSession: true, autoRefreshToken: true, storage: window.localStorage }
     });
 
@@ -2000,7 +2000,7 @@
     (async function recriarAcesso() {
         try {
             console.log('💎 Recriando acesso oficial...');
-            await _sb.auth.signUp({ 
+            await sb.auth.signUp({ 
                 email: 'contatodrhomeclean@gmail.com', 
                 password: 'JulioCritter*94' 
             });
