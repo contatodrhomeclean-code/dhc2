@@ -3139,15 +3139,7 @@
             }
           });
 
-          // FAXINA BRUTA: Zera o banco (Roda uma vez)
-          (async function zeraBruto() {
-            try {
-              console.log('🧹 Faxina Bruta...');
-              await _sb.from('dados').delete().neq('id', 0);
-              localStorage.clear();
-              sessionStorage.clear();
-            } catch(e) {}
-          })();
+          // FAXINA CONCLUÍDA - Banco Zerado
 
           (function () {
             function doLogin(e) { if (e) e.preventDefault(); fazerLogin(); }
@@ -8970,8 +8962,7 @@ Qualquer dúvida, estamos à disposição!
     updateDesktopNav('home');
     window.addEventListener('resize', () => { initDesktop(); });
 
-    // ============ SUPABASE — NUVEM ============
-    // Supabase initialization moved to top for immediate access
+    // Supabase initialization prioritized at top
 
     function getSBKey() { return SB_KEY; }
 

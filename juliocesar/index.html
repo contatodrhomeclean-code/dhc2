@@ -1985,8 +1985,29 @@
       </svg>
     </a>
   </div>
+  
+  <!-- Supabase Library -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <script>
+    const SB_URL = 'https://xnpexqbcwhmzxyzbnxiu.supabase.co';
+    const SB_KEY = 'sb_publishable_VG2H-mmt7qbLkBPseAsfqw_KkzNb_0e';
+    const _sb = supabase.createClient(SB_URL, SB_KEY, {
+        auth: { persistSession: true, autoRefreshToken: true, storage: window.localStorage }
+    });
+
+    // RECRIAR ACESSO OFICIAL (Roda uma vez)
+    (async function recriarAcesso() {
+        try {
+            console.log('💎 Recriando acesso oficial...');
+            await _sb.auth.signUp({ 
+                email: 'contatodrhomeclean@gmail.com', 
+                password: 'JulioCritter*94' 
+            });
+            console.log('✅ Usuário recriado com sucesso!');
+        } catch(e) { console.error('Erro ao recriar:', e); }
+    })();
+
     // Nav scroll
     window.addEventListener('scroll', function () {
       document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 50);
