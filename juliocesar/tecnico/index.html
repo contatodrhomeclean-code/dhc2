@@ -879,14 +879,7 @@
       }
     });
 
-    // FAXINA BRUTA: Zera o banco (Roda uma vez)
-    (async function zeraBruto() {
-      try {
-        await _sb.from('dados').delete().neq('id', 0);
-        localStorage.clear();
-        sessionStorage.clear();
-      } catch (e) { }
-    })();
+    // FAXINA CONCLUÍDA
     const GOOGLE_REVIEW_URL = 'https://g.page/r/CWnF2jY4DQVeEBM/review';
     const PIX_CHAVE = '66992394914';
     const WPP_EMPRESA = '5566992394914';
