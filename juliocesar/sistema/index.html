@@ -2843,9 +2843,9 @@
           <div class="hdr" style="flex-direction:column;align-items:flex-start;gap:2px;padding-bottom:10px">
             <div style="display:flex;align-items:center;justify-content:space-between;width:100%">
               <div style="display:flex;align-items:center;gap:8px">
-                <span style="font-size:26px;font-weight:900;color:#0D0D0D;letter-spacing:-1px;line-height:1">Dr.</span>
+                <span style="font-size:26px;font-weight:900;color:#000000;letter-spacing:-1px;line-height:1">Dr.</span>
                 <div>
-                  <div style="font-size:18px;font-weight:900;color:#2E7D32;letter-spacing:-0.5px;line-height:1">HOME CLEAN <span style="font-size:18px">🍃</span></div>
+                  <div style="font-size:18px;font-weight:900;color:#00A36C;letter-spacing:-0.5px;line-height:1">HOME CLEAN <span style="font-size:18px">🍃</span></div>
                 </div>
               </div>
               <button class="hdr-bell" onclick="openM('m-notif')" id="home-bell">
@@ -2853,7 +2853,7 @@
                 <span class="hdr-badge" id="home-bell-n" style="display:none">0</span>
               </button>
             </div>
-            <div style="font-size:10px;font-weight:700;color:#B8860B;letter-spacing:2px;text-transform:uppercase;margin-top:2px">ALTO PADRÃO EM HIGIENIZAÇÃO</div>
+            <div style="font-size:10px;font-weight:700;color:#D4AF37;letter-spacing:2px;text-transform:uppercase;margin-top:2px">ALTO PADRÃO EM HIGIENIZAÇÃO</div>
             <div style="font-size:11px;color:var(--gray);margin-top:3px" id="home-data"></div>
           </div>
           <div class="content" style="padding-top: 10px;">
@@ -3412,7 +3412,7 @@
           </div>
           <div class="flex g8">
              <button onclick="downloadRelatorioFinanceiro()"
-               style="display:flex;align-items:center;gap:6px;padding:10px 16px;background:var(--blue);color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer">📄 PDF</button>
+               style="display:flex;align-items:center;gap:6px;padding:10px 16px;background:var(--blue);color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer">📄 Baixar Financeiro (PDF)</button>
              <button onclick="openM('m-add-fin')"
                style="display:flex;align-items:center;gap:6px;padding:10px 16px;background:var(--green);color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer">+
                Lançamento</button>
@@ -4714,8 +4714,8 @@
         <text x="35" y="39" text-anchor="middle" font-size="13" font-weight="900" fill="#fff">${Math.round(pct)}%</text>
       </svg>
       <div style="flex:1;min-width:0">
-        <div style="font-size:11px;opacity:.8">de ${fc(meta)} · ${status}</div>
-        ${falta > 0 ? `<div style="font-size:11px;margin-top:4px;background:rgba(255,255,255,.15);border-radius:8px;padding:3px 8px;display:inline-block">Faltam ${fc(falta)}</div>` : ''}
+        <div style="font-size:11px;opacity:.8">Meta: ${fc(meta)} · ${status}</div>
+        ${falta > 0 ? `<div style="font-size:11px;margin-top:4px;background:rgba(255,255,255,0.15);border-radius:8px;padding:3px 8px;display:inline-block">Faltam ${fc(falta)}</div>` : '<div style="font-size:11px;margin-top:4px;background:rgba(255,255,255,0.15);border-radius:8px;padding:3px 8px;display:inline-block">Meta atingida! 🏆</div>'}
       </div>
     </div>
     <div style="margin-top:10px;background:rgba(255,255,255,.15);border-radius:6px;height:5px">
@@ -4768,9 +4768,10 @@
       }
 
       // Sino: mostra apenas alertas da Agenda do Dia
-      const agendaHj = D.ordens.filter(o => o.data === hj && o.status !== 'cancelada').length;
+      // Sino: Agenda do Dia + Pós-Vendas + Insumos em Falta
+      const totalNotif = agendaHj + fidAtrasados + insCurto.length;
       const bellEl = el('home-bell-n');
-      if (bellEl) { bellEl.textContent = agendaHj; bellEl.style.display = agendaHj > 0 ? '' : 'none'; }
+      if (bellEl) { bellEl.textContent = totalNotif; bellEl.style.display = totalNotif > 0 ? '' : 'none'; }
 
       // ===== META MENSAL =====
       renderMetaCard(recMes);
@@ -6030,26 +6031,26 @@
           etapasHtml = `<button class="btn btn-primary" onclick="avancarEtapa(${o.id});closeM('m-osv');renderOS();renderHome()">→ ${ETAPA_LBL[o.status]}</button>`;
         }
       }
-      el('osv-etapas').innerHTML = etapasHtml;
-      el('osv-wpp').onclick = () => wppOS(id);
-
-      // Botão Cuidados pós-serviço e Avaliação
+      // Botões Ação Admin
       const osvAcoes = el('osv-etapas');
-      const btnCuidados = document.createElement('button');
-      btnCuidados.className = 'btn btn-outline';
-      btnCuidados.style = 'margin-top:8px;width:100%;color:var(--green);border-color:var(--green)';
-      btnCuidados.innerHTML = '✨ Cuidados + Avaliação';
-      btnCuidados.onclick = () => enviarCuidados(id);
-      osvAcoes.appendChild(btnCuidados);
-
-      // Botão PIX Rápido
-      if (o.status !== 'concluida') {
+      if (o.status === 'concluida') {
         const btnPix = document.createElement('button');
         btnPix.className = 'btn btn-primary';
         btnPix.style = 'margin-top:8px;width:100%;background:#00bfa5;border:none';
-        btnPix.innerHTML = '💎 Cobrar via PIX';
-        btnPix.onclick = () => enviarPixRapido(id);
+        btnPix.innerHTML = '💳 Checkout PIX';
+        btnPix.onclick = () => {
+          const pixKey = "66992394914";
+          const msg = `Olá, ${o.cli}! 😊\n\nSegue os dados para pagamento do serviço de *${o.svc}*:\n\n💰 *Valor:* ${fc(o.val)}\n🔑 *Chave PIX (Telefone):* ${pixKey}\n🏦 *Nome:* Julio Cesar\n\nObrigado! 🙏`;
+          window.open(`https://wa.me/55${getTelCliente(o.cli)}?text=${encodeURIComponent(msg)}`, '_blank');
+        };
         osvAcoes.appendChild(btnPix);
+
+        const btnPos = document.createElement('button');
+        btnPos.className = 'btn btn-outline';
+        btnPos.style = 'margin-top:8px;width:100%;color:var(--green);border-color:var(--green)';
+        btnPos.innerHTML = '✨ Avaliação / Pós-Venda';
+        btnPos.onclick = () => enviarCuidados(o.id);
+        osvAcoes.appendChild(btnPos);
       }
       // Botão lembrete — só para OS agendadas hoje ou amanhã
       const btnLembrete = el('osv-lembrete');
