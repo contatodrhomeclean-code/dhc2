@@ -28,8 +28,21 @@
   <style>
     html,
     body {
-      background: #FFFFFF !important;
-      color: #0D0D0D
+      background: #E5E5E5 !important; /* Fundo cinza claro para destacar o container */
+      color: #0D0D0D;
+      margin: 0;
+      padding: 0;
+    }
+
+    #app-container {
+      max-width: 480px;
+      margin: 0 auto;
+      background: #FFFFFF;
+      min-height: 100vh;
+      position: relative;
+      box-shadow: 0 0 40px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
     }
 
     /* ===== CARD META ===== */
@@ -2665,10 +2678,46 @@
     }
 
     /* Removido desktop-responsive para focar 100% no Mobile-First */
+    /* ===== TOAST NOTIFICATIONS ===== */
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: none;
+      width: 90%;
+      max-width: 400px;
+    }
+    .toast {
+      background: #333;
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      animation: toastIn 0.3s ease-out forwards;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      pointer-events: auto;
+    }
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .toast.success { background: #00A36C; }
+    .toast.error { background: #EF4444; }
+    .toast.info { background: #2196F3; }
   </style>
 </head>
 
 <body>
+  <div id="app-container">
 
   <!-- ===== DESKTOP SIDEBAR (visível só em telas >= 768px via CSS) ===== -->
   <div id="desktop-sidebar" style="display:none">
@@ -2845,10 +2894,11 @@
           <!-- HEADER MOBILE DR. HOME CLEAN -->
           <div class="hdr" style="flex-direction:column;align-items:flex-start;gap:2px;padding-bottom:10px">
             <div style="display:flex;align-items:center;justify-content:space-between;width:100%">
-              <div style="display:flex;align-items:center;gap:8px">
-                <span style="font-size:26px;font-weight:900;color:#000000;letter-spacing:-1px;line-height:1">Dr.</span>
-                <div>
-                  <div style="font-size:18px;font-weight:900;color:#00A36C;letter-spacing:-0.5px;line-height:1">HOME CLEAN <span style="font-size:18px">🍃</span></div>
+              <div style="display:flex;align-items:center;gap:4px">
+                <span style="font-size:26px;font-weight:900;color:#000000;letter-spacing:-1px;line-height:1">Dr</span>
+                <div style="display:flex;gap:4px">
+                  <span style="font-size:18px;font-weight:900;color:#00A36C;letter-spacing:-0.5px;line-height:1">HOME</span>
+                  <span style="font-size:18px;font-weight:900;color:#000000;letter-spacing:-0.5px;line-height:1">CLEAN <span style="font-size:18px">🍃</span></span>
                 </div>
               </div>
               <button class="hdr-bell" onclick="openM('m-notif')" id="home-bell">
@@ -2917,12 +2967,6 @@
               </div>
             </div>
 
-
-            <!-- CARD META MENSAL + IA -->
-            <div id="home-meta-card"></div>
-
-            <!-- ALERTAS CRÍTICOS -->
-            <div id="home-alerts" style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px"></div>
 
             <!-- Resumo do Dia -->
             <div class="card" style="margin-bottom:14px">
@@ -3390,20 +3434,33 @@
                 <div class="stat-sub">Por cliente</div>
               </div>
             </div>
-            <div class="hdr" style="margin-top:20px;margin-bottom:12px;padding:0">
-              <div>
-                <div style="font-size:20px;font-weight:800">Insumos & Estoque</div>
-                <div style="font-size:13px;color:var(--gray)">Gestão de materiais e consumo técnico</div>
-              </div>
-              <div class="flex g8">
-                <button onclick="downloadInventarioPDF()" style="padding:10px;background:var(--blue);color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer">📄 PDF</button>
-                <button onclick="editInsumo(0)" class="btn-novo">+ Novo</button>
-              </div>
-            </div>
-            <div class="search-box" style="margin-bottom:12px"><span class="search-ic">🔍</span><input
+          <div class="search-box" style="margin-bottom:12px"><span class="search-ic">🔍</span><input
               placeholder="Buscar cliente..." oninput="renderClis(this.value)"></div>
           <div id="cli-ranking"></div>
           <div id="cli-list"></div>
+        </div>
+      </div>
+
+      <!-- ===== SERVIÇOS & INSUMOS (RENOMEADO) ===== -->
+      <div id="pg-catalogo" class="page">
+        <div class="hdr">
+          <div>
+            <div style="font-size:20px;font-weight:800">Serviços & Insumos</div>
+            <div style="font-size:13px;color:var(--gray)">Gestão de catálogo e estoque</div>
+          </div>
+          <div class="flex g8">
+             <button onclick="downloadInventarioPDF()" style="padding:10px;background:var(--blue);color:#fff;border:none;border-radius:12px;font-size:13px;font-weight:700;cursor:pointer">📄 PDF</button>
+             <button onclick="abrirNovoCat()" class="btn-novo">+ Novo</button>
+          </div>
+        </div>
+        <div class="content">
+          <div class="tabs" style="margin-bottom:14px">
+            <button class="tab active" id="tab-cat-servicos" onclick="switchCatTab('servicos')">🛠️ Serviços</button>
+            <button class="tab" id="tab-cat-insumos" onclick="switchCatTab('insumos')">🧪 Insumos/Estoque</button>
+          </div>
+          <div id="cat-body">
+            <!-- Conteúdo dinâmico -->
+          </div>
         </div>
       </div>
 
@@ -4502,7 +4559,10 @@
           <div class="fgrp"><label>Custo por ml/g/un (R$) *</label><input id="ins-custo" placeholder="0,00" type="text"
               inputmode="numeric" onfocus="this.select()" oninput="mascaraMoeda(this)"></div>
         </div>
-        <div class="fgrp"><label>Estoque Atual (Qtd)</label><input id="ins-estoque" type="number" placeholder="Ex: 50" style="width:100%;padding:12px 14px;border:1.5px solid var(--gray3);border-radius:10px;font-family:inherit;font-size:14px"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="fgrp"><label>Estoque Atual</label><input id="ins-estoque" type="number" placeholder="Ex: 50" style="width:100%;padding:12px 14px;border:1.5px solid var(--gray3);border-radius:10px;font-family:inherit;font-size:14px"></div>
+          <div class="fgrp"><label style="color:var(--green)">+ Entrada</label><input id="ins-entrada" type="number" placeholder="Athenas..." style="width:100%;padding:12px 14px;border:2px solid var(--green);border-radius:10px;font-family:inherit;font-size:14px;font-weight:700"></div>
+        </div>
       </div>
       <div class="flex g8 mt12">
         <button class="btn btn-outline" onclick="closeM('m-insumo')">Cancelar</button>
@@ -4692,44 +4752,46 @@
       const meta = (D.cfg && D.cfg.meta) ? parseFloat(D.cfg.meta) : 5000;
       const el_ = el('home-meta-card');
       if (!el_) return;
-      if (meta <= 0) {
-        el_.innerHTML = `<div class="meta-card" style="padding:16px;text-align:center;" onclick="nav('configuracoes')">
-      <div style="font-size:14px;font-weight:700">Meta do Mês não configurada</div>
-      <div style="color:rgba(255,255,255,.7);font-size:12px">Toque para configurar</div></div>`;
-        return;
-      }
+      
       const pctReal = (recMes / meta) * 100;
       const pct = Math.min(pctReal, 100);
       const falta = Math.max(meta - recMes, 0);
       
-      // Cores solicitadas: Verde >= 70%, Amarelo 40-69%, Vermelho < 40%
-      let cor = '#FF6B6B'; // Vermelho
-      if (pctReal >= 70) cor = '#4ADE80'; // Verde
-      else if (pctReal >= 40) cor = '#FFD700'; // Amarelo
+      let cor = '#EF4444'; // Vermelho
+      let emoji = '📉';
+      if (pctReal >= 70) { cor = '#22C55E'; emoji = '🚀'; } // Verde
+      else if (pctReal >= 40) { cor = '#EAB308'; emoji = '📊'; } // Amarelo
 
-      const status = pctReal >= 100 ? 'Meta atendida!' : pctReal >= 70 ? 'No ritmo' : pctReal >= 40 ? 'Atenção' : 'Acelere!';
-      const r = 28, circ = 2 * Math.PI * r;
+      const r = 48, circ = 2 * Math.PI * r;
       const offset = circ * (1 - pct / 100);
       
-      el_.innerHTML = `<div class="meta-card">
-    <div style="display:flex;align-items:center;gap:16px">
-      <svg width="70" height="70" viewBox="0 0 70 70" style="flex-shrink:0">
-        <circle cx="35" cy="35" r="${r}" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="7"/>
-        <circle cx="35" cy="35" r="${r}" fill="none" stroke="${cor}" stroke-width="7"
-          stroke-linecap="round" stroke-dasharray="${circ}" stroke-dashoffset="${offset}"
-          transform="rotate(-90 35 35)" style="transition:stroke-dashoffset 1s ease"/>
-        <text x="35" y="39" text-anchor="middle" font-size="13" font-weight="900" fill="#fff">${Math.round(pctReal)}%</text>
-      </svg>
-      <div style="flex:1;min-width:0">
-        <div style="font-size:11px;opacity:.9;font-weight:600">Meta: ${fc(meta)} · ${status}</div>
-        <div style="font-size:16px;font-weight:800;margin-top:2px">${fc(recMes)} faturado</div>
-        ${falta > 0 ? `<div style="font-size:11px;margin-top:4px;background:rgba(255,255,255,0.15);border-radius:8px;padding:3px 8px;display:inline-block">Faltam ${fc(falta)}</div>` : '<div style="font-size:11px;margin-top:4px;background:rgba(255,255,255,0.15);border-radius:8px;padding:3px 8px;display:inline-block">🏆 Meta Atingida!</div>'}
-      </div>
-    </div>
-    <div style="margin-top:10px;background:rgba(255,255,255,.15);border-radius:6px;height:5px">
-      <div style="background:${cor};height:5px;border-radius:6px;width:${pct}%;transition:width 1s ease"></div>
-    </div>
-  </div>`;
+      el_.innerHTML = `
+        <div class="meta-card">
+          <div class="meta-particles" id="meta-particles"></div>
+          <div class="meta-gauge-wrap">
+            <div class="meta-gauge">
+              <svg width="110" height="110" viewBox="0 0 110 110">
+                <circle class="meta-gauge-bg" cx="55" cy="55" r="${r}" />
+                <circle class="meta-gauge-fill" cx="55" cy="55" r="${r}" 
+                  stroke="${cor}" stroke-dasharray="${circ}" stroke-dashoffset="${offset}" />
+              </svg>
+              <div class="meta-gauge-center">
+                <div class="meta-gauge-emoji">${emoji}</div>
+                <div class="meta-gauge-pct">${Math.round(pctReal)}%</div>
+                <div class="meta-gauge-sub">DA META</div>
+              </div>
+            </div>
+            <div class="meta-info">
+              <div class="meta-atual">${fc(recMes)}</div>
+              <div class="meta-total">de ${fc(meta)} este mês</div>
+              <div class="meta-falta-box" style="border-left-color: ${cor}">
+                <div class="meta-falta-txt">${pctReal >= 100 ? '🏆 OBJETIVO ATINGIDO!' : 'FALTA PARA A META:'}</div>
+                <div class="meta-falta-val" style="color: ${cor}">${pctReal >= 100 ? 'Meta Superada!' : fc(falta)}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
     }
 
     function renderHome() {
@@ -6032,15 +6094,28 @@
       // Etapas
       const prox = ETAPAS.indexOf(o.status);
       let etapasHtml = '';
+      
+      const osvAcoes = document.getElementById('osv-etapas');
+      if (!osvAcoes) return;
+      osvAcoes.innerHTML = ''; 
+
       if (prox >= 0 && prox < ETAPAS.length - 1) {
         if (ETAPAS[prox + 1] === 'concluida') {
-          etapasHtml = `<button class="btn btn-primary" style="background:var(--green)" onclick="abrirConcluir(${o.id})">✅ Finalizar e Receber</button>`;
+           const btnFin = document.createElement('button');
+           btnFin.className = 'btn btn-primary';
+           btnFin.style = 'width:100%;background:var(--green);font-weight:800;padding:16px;margin-top:8px;border-radius:12px';
+           btnFin.innerHTML = '✅ Finalizar e Receber';
+           btnFin.onclick = () => { closeM('m-osv'); abrirConcluir(o.id); };
+           osvAcoes.appendChild(btnFin);
         } else {
-          etapasHtml = `<button class="btn btn-primary" onclick="avancarEtapa(${o.id});closeM('m-osv');renderOS();renderHome()">→ ${ETAPA_LBL[o.status]}</button>`;
+           const btnAdv = document.createElement('button');
+           btnAdv.className = 'btn btn-primary';
+           btnAdv.style = 'width:100%;font-weight:800;padding:16px;margin-top:8px;border-radius:12px';
+           btnAdv.innerHTML = `→ ${ETAPA_LBL[o.status]}`;
+           btnAdv.onclick = () => { avancarEtapa(o.id); closeM('m-osv'); renderOS(); renderHome(); };
+           osvAcoes.appendChild(btnAdv);
         }
       }
-      // Botões Ação Admin
-      const osvAcoes = el('osv-etapas');
       if (o.status === 'concluida') {
         osvAcoes.innerHTML = ''; // Limpa botões padrão
         
@@ -6089,11 +6164,12 @@
       const modalHtml = `
         <div style="text-align:center;padding:10px">
           <div style="font-size:18px;font-weight:800;color:#00A36C;margin-bottom:12px">Checkout PIX</div>
-          <img src="${qrUrl}" style="width:200px;height:200px;margin:0 auto;display:block;border-radius:12px;box-shadow:var(--sh)">
+          <img src="${qrUrl}" style="width:180px;height:180px;margin:0 auto;display:block;border-radius:12px;box-shadow:var(--sh)">
           <div style="margin-top:16px;background:var(--gray4);padding:12px;border-radius:12px;border:1px dashed var(--gray3)">
             <div style="font-size:11px;color:var(--gray);text-transform:uppercase;font-weight:700">Chave PIX (Telefone)</div>
-            <div style="font-size:16px;font-weight:800;margin:4px 0">${pixKey}</div>
+            <div id="pix-key-val" style="font-size:16px;font-weight:800;margin:4px 0">${pixKey}</div>
             <button class="btn btn-sm btn-outline" style="width:100%;margin-top:4px" onclick="copiarTexto('${pixKey}', this)">📋 Copiar Chave</button>
+            <button class="btn btn-sm btn-outline" style="width:100%;margin-top:8px;background:#25D366;color:#fff;border:none" onclick="compartilharPix(${o.id})">📲 Enviar PIX WhatsApp</button>
           </div>
           <div style="margin-top:12px;font-size:14px;font-weight:700;color:var(--green)">Total: ${fc(o.val)}</div>
           <button class="btn btn-primary" style="margin-top:16px;width:100%;background:#00A36C" onclick="closeM('m-checkout')">Concluir</button>
@@ -6146,6 +6222,13 @@
         dicas = "1. 🛡️ Aguarde 24h para cura completa.\n2. 🚫 Não teste repelência agora.\n3. 🧼 Use só papel absorvente em acidentes.";
       }
       const msg = `Olá, ${o.cli}! 😊\n\nAqui estão os cuidados após o serviço de *${o.svc}*:\n\n${dicas}\n\nE se puder, avalie-nos: https://g.page/r/CWnF2jY4DQVeEBM/review\n\nObrigado! 🙏`;
+      window.open(`https://wa.me/55${getTelCliente(o.cli)}?text=${encodeURIComponent(msg)}`, '_blank');
+    }
+
+    function compartilharPix(id) {
+      const o = D.ordens.find(x => x.id === id); if (!o) return;
+      const pixKey = "66992394914";
+      const msg = `Olá, ${o.cli}! 😊\n\nSegue a chave para pagamento do serviço de *${o.svc}*:\n\n💰 *Valor:* ${fc(o.val)}\n🔑 *PIX (Telefone):* ${pixKey}\n\n*Dr. Home Clean* agradece a preferência! 🧼✨`;
       window.open(`https://wa.me/55${getTelCliente(o.cli)}?text=${encodeURIComponent(msg)}`, '_blank');
     }
 
@@ -7413,7 +7496,10 @@ Qualquer dúvida, estamos à disposição!
       const nome = vv('ins-nome').trim(); if (!nome) { alert('Informe o nome.'); return; }
       const un = vv('ins-un');
       const custo = lerMoeda('ins-custo'); if (!custo) { alert('Informe o custo.'); return; }
-      const estoque = parseFloat(vv('ins-estoque')) || 0;
+      const entrada = parseFloat(vv('ins-entrada')) || 0;
+      let estoque = parseFloat(vv('ins-estoque')) || 0;
+      
+      estoque += entrada;
 
       if (!D.insumos) D.insumos = [];
       if (!D.ids.ins) D.ids.ins = 1;
@@ -8466,6 +8552,24 @@ Qualquer dúvida, estamos à disposição!
       window.open(`https://wa.me/55${tel}?text=${encodeURIComponent(msg)}`, '_blank');
     }
 
+    function toast(msg, tipo = 'info') {
+      let cnt = document.getElementById('toast-container');
+      if (!cnt) {
+        cnt = document.createElement('div');
+        cnt.id = 'toast-container';
+        cnt.className = 'toast-container';
+        document.body.appendChild(cnt);
+      }
+      const t = document.createElement('div');
+      t.className = `toast ${tipo}`;
+      t.innerHTML = `<span>${msg}</span>`;
+      cnt.appendChild(t);
+      setTimeout(() => {
+        t.style.animation = 'toastIn 0.3s ease-in reverse forwards';
+        setTimeout(() => t.remove(), 300);
+      }, 4000);
+    }
+
     function renderNotificacoes() {
       const notifs = getNotificacoes();
       // Atualizar badge
@@ -8657,7 +8761,7 @@ Qualquer dúvida, estamos à disposição!
     const PAGE_TITLES = {
       home: '🏠 Home', agenda: '📅 Agenda', orc: '📋 Orçamentos', ordens: '🔧 Ordens de Serviço',
       clientes: '👥 Clientes', crm: '🎯 CRM', fidelizacao: '⭐ Fidelização',
-      financeiro: '💰 Financeiro', catalogo: '📦 Catálogo de Serviços',
+      financeiro: '💰 Financeiro', catalogo: '📦 Serviços & Insumos',
       tecnicos: '👷 Técnicos & Comissões', configuracoes: '⚙️ Configurações', mais: '☰ Menu'
     };
 
@@ -8998,13 +9102,20 @@ Qualquer dúvida, estamos à disposição!
           const nuvem = await sbGetComTs();
           if (!nuvem || !nuvem.conteudo) return;
           if (nuvem.atualizado_em === _tsUltimoSync) return;
+          
+          // Proactive Alert: Check if new orders arrived
+          if (D && D.ordens && nuvem.conteudo.ordens && nuvem.conteudo.ordens.length > D.ordens.length) {
+            const count = nuvem.conteudo.ordens.length - D.ordens.length;
+            toast(`🔔 ${count} Novo(s) agendamento(s) recebido(s)!`, 'success');
+          }
+          
           _tsUltimoSync = nuvem.atualizado_em;
           D = nuvem.conteudo; // OVERRIDE ESTRITO
           salvarLocal();
           try { renderHome(); renderProps(); renderOS(); renderCal(); renderFin(); renderClis(); } catch (e) { }
           mostrarSync('ok');
         } catch (e) { }
-      }, 60 * 1000);
+      }, 10 * 1000);
 
       // ============ REAL-TIME SYNC (SUPABASE CHANNELS) ============
       try {
@@ -9472,6 +9583,7 @@ Qualquer dúvida, estamos à disposição!
     </div>
   </div>
 
+  </div> <!-- end app-container -->
 </body>
 
 </html>

@@ -959,6 +959,7 @@
         );
 
         if (!tec) {
+          console.warn('Login falhou:', email, senha);
           document.getElementById('login-erro').style.display = 'block';
           document.getElementById('login-erro').textContent = 'E-mail ou senha incorretos / Acesso desativado.';
           senhaInp.value = '';
@@ -1019,7 +1020,7 @@
           renderAgenda();
           setSyncBar('Atualizado ' + new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }));
         } catch (e) { }
-      }, 15000);
+      }, 10000);
     }
 
     function setSyncBar(txt) {
