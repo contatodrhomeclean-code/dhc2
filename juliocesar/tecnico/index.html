@@ -1119,11 +1119,8 @@
           }
         }
 
-        // Botão Finalizar (PIX + Avaliação) — para OS concluída ou em execução
+        // Botão Finalizar removido para o técnico (Foco 100% Execução)
         let finBtn = '';
-        if (o.status === 'concluida' || o.status === 'execucao') {
-          finBtn = `<button class="btn-finalizar" onclick="abrirFinalizar(${o.id})">🏦 PIX + ⭐ Avaliação</button>`;
-        }
 
         return `<div class="os-card${isAtrasada ? ' atrasada' : ''}">
       <div class="os-header">
@@ -1316,9 +1313,34 @@
         depois: Array.from(fotosDepoisArr).map(f => f.name)
       };
 
-      o.status = 'concluida';
-      o.em = new Date().toISOString();
-      o.concluidaEm = o.em.split('T')[0];
+      // Sangria de Estoque Automática
+      if (D.insumos) {
+        o.insumosGasto.forEach(g => {
+          const ins = D.insumos.find(i => i.id === g.id);
+          if (ins) {
+            if (!ins.estoque) ins.estoque = 0;
+            ins.estoque -= g.qtd;
+          }
+        });
+      }
+
+      // Atualização Financeira em Tempo Real (Auto-Receita)
+      if (o.val > 0) {
+        if (!D.receitas) D.receitas = [];
+        if (!D.ids.r) D.ids.r = 1;
+        D.receitas.push({ 
+          id: D.ids.r++, 
+          desc: `OS #${o.id} — ${o.svc} — ${o.cli}`, 
+          cliId: o.cliId, 
+          cli: o.cli, 
+          val: o.val, 
+          data: o.concluidaEm, 
+          pgto: o.pgto || 'PIX', 
+          status: 'recebido', 
+          em: new Date().toISOString(), 
+          auto: true 
+        });
+      }
 
       fecharTecConcluir();
 
@@ -1326,20 +1348,19 @@
       setTimeout(() => {
         const tel = getTelCliente(o.cli);
         if (tel) {
-          const isImpermeabilizacao = o.svc.toLowerCase().includes('impermeabilização') || o.svc.toLowerCase().includes('blindagem');
+          const isImpermeabilizacao = (o.svc || '').toLowerCase().includes('impermeabilização') || (o.svc || '').toLowerCase().includes('blindagem');
           const guia = isImpermeabilizacao
             ? `🛡️ *GUIA DE CURA (IMPERMEABILIZAÇÃO)*:\n- Tempo de cura: 24h\n- Faça o teste da gota após a cura\n- 🚫 Proibido: Derivados de petróleo e químicos agressivos.`
             : `✨ *GUIA DE SECAGEM (LIMPEZA)*:\n- Mantenha o ambiente ventilado\n- Tempo de secagem: 4h a 8h\n- 🚫 Proibido: Sentar/usar antes de estar 100% seco.`;
 
           const msg = encodeURIComponent(`Olá ${o.cli}! Seu serviço foi finalizado. Seguem instruções importantes:\n\n${guia}\n\nObrigado por confiar na Dr. Home Clean! 🧼💚`);
-          if (confirm('Deseja enviar o Guia de Cuidados Pós-Serviço via WhatsApp? (Elite Feature)')) {
+          if (confirm('Deseja enviar o Guia de Cuidados Pós-Serviço via WhatsApp?')) {
             window.open('https://wa.me/' + limparTel(tel) + '?text=' + msg, '_blank');
           }
         }
       }, 500);
 
-      // Abrir modal de PIX automaticamente
-      setTimeout(() => abrirFinalizar(o.id), 1200);
+      // Bloqueado para o técnico: PIX e Avaliação são tratados pelo Admin no Pós-Venda.
 
       renderOS();
       renderAgenda();
